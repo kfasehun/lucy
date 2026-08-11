@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lucy (offline preview) — the shared skill store for BSP sellers</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #161a21;
+    --panel-2: #1c2129;
+    --line: #262c36;
+    --text: #e6e9ef;
+    --muted: #9aa4b2;
+    --dim: #6b7480;
+    --accent: #7cc4ff;
+    --core: #6ee7a8;
+    --warn: #ffc46b;
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #fbfbfc; --panel: #fff; --panel-2: #f4f6f8; --line: #e3e7ec;
+      --text: #14181f; --muted: #5b6674; --dim: #8b95a3;
+      --accent: #0b69c7; --core: #0f8a55; --warn: #9a6300;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+  header { border-bottom: 1px solid var(--line); padding: 56px 0 40px; }
+  h1 { font-size: 40px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -0.02em; }
+  h1 .dot { color: var(--accent); }
+  .tagline { color: var(--muted); font-size: 18px; margin: 0 0 28px; max-width: 62ch; }
+  .how { display: flex; gap: 28px; flex-wrap: wrap; margin-top: 4px; }
+  .how div { font-size: 13.5px; color: var(--muted); max-width: 26ch; }
+  .how b { color: var(--text); display: block; font-size: 13.5px; }
+  .how .n {
+    display: inline-flex; width: 20px; height: 20px; border-radius: 50%;
+    background: var(--panel-2); color: var(--accent); align-items: center;
+    justify-content: center; font-size: 11px; font-weight: 600; margin-right: 6px;
+    border: 1px solid var(--line);
+  }
+  .meta-bar {
+    display: flex; gap: 20px; flex-wrap: wrap; align-items: center;
+    padding: 14px 0; border-bottom: 1px solid var(--line);
+    font-size: 13px; color: var(--dim);
+  }
+  .meta-bar b { color: var(--text); font-weight: 600; }
+  .meta-bar a { color: var(--accent); text-decoration: none; }
+  .meta-bar a:hover { text-decoration: underline; }
+  section { padding: 40px 0; border-bottom: 1px solid var(--line); }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.09em;
+       color: var(--dim); margin: 0 0 20px; font-weight: 600; }
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 22px; }
+  input[type=search] {
+    flex: 1; min-width: 200px; background: var(--panel); color: var(--text);
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 9px 13px;
+    font-size: 14px; font-family: inherit;
+  }
+  input[type=search]:focus { outline: none; border-color: var(--accent); }
+  .chip {
+    background: var(--panel); border: 1px solid var(--line); color: var(--muted);
+    border-radius: 999px; padding: 7px 14px; font-size: 13px; cursor: pointer;
+    font-family: inherit;
+  }
+  .chip[aria-pressed=true] { border-color: var(--accent); color: var(--accent); }
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+  .card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column;
+  }
+  .card h3 { margin: 0 0 4px; font-size: 16.5px; letter-spacing: -0.01em; }
+  .card .slug { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                font-size: 11.5px; color: var(--dim); }
+  .badges { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0 12px; }
+  .badge {
+    font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 3px 8px; border-radius: 4px; border: 1px solid var(--line);
+    color: var(--muted); font-weight: 600;
+  }
+  .badge.core { color: var(--core); border-color: color-mix(in srgb, var(--core) 40%, transparent); }
+  .badge.new { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 40%, transparent); }
+  .card p { margin: 0 0 10px; font-size: 14px; color: var(--muted); }
+  .card .why { color: var(--text); font-size: 13.5px; }
+  .card footer {
+    margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line);
+    display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--dim);
+  }
+  .btn {
+    background: var(--accent); color: var(--bg); border: none; border-radius: 7px;
+    padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer;
+    text-decoration: none; font-family: inherit;
+  }
+  .btn:hover { filter: brightness(1.1); }
+  .btn.ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+  .stats { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .stat { background: var(--panel); border: 1px solid var(--line);
+          border-radius: var(--radius); padding: 16px; }
+  .stat .v { font-size: 26px; font-weight: 650; letter-spacing: -0.02em; }
+  .stat .k { font-size: 12.5px; color: var(--dim); margin-top: 2px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+  th { color: var(--dim); font-weight: 600; font-size: 11.5px;
+       text-transform: uppercase; letter-spacing: 0.06em; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .note {
+    background: var(--panel-2); border-left: 2px solid var(--warn);
+    padding: 13px 16px; border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: 13.5px; color: var(--muted); margin-bottom: 20px;
+  }
+  .note b { color: var(--text); }
+  .empty { color: var(--dim); font-size: 13.5px; padding: 18px;
+           background: var(--panel); border: 1px dashed var(--line);
+           border-radius: var(--radius); }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px;
+    background: var(--panel-2); padding: 2px 6px; border-radius: 4px;
+    border: 1px solid var(--line);
+  }
+  footer.site { padding: 32px 0 60px; color: var(--dim); font-size: 13px; }
+  footer.site a { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>Lucy<span class="dot">.</span></h1>
+    <p class="tagline" id="tagline">The shared skill store for Bending Spoons sellers.</p>
+    <div class="how">
+      <div><b><span class="n">1</span>Pick a skill</b>Browse below. Core skills are the ones everyone should have.</div>
+      <div><b><span class="n">2</span>Click Install</b>A file downloads. Open it in Claude and hit Save skill.</div>
+      <div><b><span class="n">3</span>Say "onboard me"</b>First time only. Lucy sets itself up around how you sell.</div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="meta-bar">
+    <span>Version <b id="version">—</b></span>
+    <span><b id="skill-count">—</b> skills</span>
+    <span>Updated <b id="generated">—</b></span>
+    <a href="../CHANGELOG.md">What changed</a>
+    <a id="repo-link" href="#">Source</a>
+    <span>Already installed? Say <code>sync lucy</code></span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section>
+    <h2>Skills</h2>
+    <div class="controls">
+      <input type="search" id="q" placeholder="Search skills, e.g. objection, no-show, transcript" aria-label="Search skills">
+      <button class="chip" data-filter="all" aria-pressed="true">All</button>
+      <button class="chip" data-filter="core" aria-pressed="false">Core</button>
+      <button class="chip" data-filter="BDR" aria-pressed="false">BDR</button>
+      <button class="chip" data-filter="AE" aria-pressed="false">AE</button>
+      <button class="chip" data-filter="CSM" aria-pressed="false">CSM</button>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section>
+    <h2>The fleet</h2>
+    <div class="stats" id="fleet-stats"></div>
+    <div id="fleet-detail" style="margin-top:20px"></div>
+  </section>
+
+  <section>
+    <h2>Performance</h2>
+    <div class="note">
+      <b>Read this before ranking anything.</b> These are totals across everyone who sent a report,
+      never individual numbers. A skill appearing next to a good week does not mean it caused one.
+      There is no control group and the sample is small, so treat this as early signal
+      until the seller count is well into double digits.
+    </div>
+    <div class="stats" id="perf-stats"></div>
+    <div id="perf-detail" style="margin-top:20px"></div>
+  </section>
+
+</div>
+
+<footer class="site">
+  <div class="wrap">
+    Built by sellers, for sellers. Publish what you build: say <code>publish this skill</code>.<br>
+    No prospect data, contact lists, or individual numbers live in this repo. It is public on purpose.
+  </div>
+</footer>
+
+<script>
+// Offline preview. Serves the catalog from inline data so this file works by
+// double-clicking it, with no web server and nothing pushed to GitHub yet.
+// The real site at docs/index.html fetches the same JSON over HTTP.
+window.__LUCY__ = { "data/skills.json": {
+  "product": {
+    "name": "Lucy",
+    "tagline": "The shared skill store for Bending Spoons sellers.",
+    "channel": "#kenny-machine",
+    "repo": "https://github.com/REPLACE-ME/lucy"
+  },
+  "version": "1.0.0",
+  "generated": "2026-08-11T14:40:07Z",
+  "skills": [
+    {
+      "name": "call-needs-assessment",
+      "title": "Call Needs Assessment",
+      "summary": "After a call, pulls the transcript and maps every stated need against what you actually sell. Marks each one solved, partial, gap, or needs validation. Flags commercial and competitive risk.",
+      "why": "Stops you promising things the product does not do.",
+      "status": "optional",
+      "roles": [
+        "BDR",
+        "AE"
+      ],
+      "author": "Kenny Fasehun",
+      "company": "Brightcove",
+      "added": "2026-08-10",
+      "updated": "2026-08-11",
+      "files": 1,
+      "hash": "91f92a511fffb91d",
+      "install": "dist/call-needs-assessment.skill"
+    },
+    {
+      "name": "followup-noshow",
+      "title": "Follow-ups and No-shows",
+      "summary": "Nudges holds nobody has accepted, confirms today's meetings, and rebooks anyone who missed one. Never sends a naked reminder.",
+      "why": "A no-show is not a no.",
+      "status": "core",
+      "roles": [
+        "BDR",
+        "AE",
+        "CSM"
+      ],
+      "author": "Kenny Fasehun",
+      "company": "Brightcove",
+      "added": "2026-08-10",
+      "updated": "2026-08-11",
+      "files": 1,
+      "hash": "f84d168b06c75028",
+      "install": "dist/followup-noshow.skill"
+    },
+    {
+      "name": "human-messaging",
+      "title": "Human Messaging",
+      "summary": "Writes the actual emails. Enforces a banned-phrase list and the one-question rule. Grounded in Gap Selling, Sandler, and Josh Braun rather than generic sales copy.",
+      "why": "Run before drafting anything a prospect will read.",
+      "status": "core",
+      "roles": [
+        "BDR",
+        "AE",
+        "CSM"
+      ],
+      "author": "Kenny Fasehun",
+      "company": "Brightcove",
+      "added": "2026-08-10",
+      "updated": "2026-08-11",
+      "files": 4,
+      "hash": "a08499731691b8c3",
+      "install": "dist/human-messaging.skill"
+    },
+    {
+      "name": "lucy-publish",
+      "title": "Publish",
+      "summary": "Takes a skill you built, adds it to the store, packages it, and drafts the announcement. Refuses to publish anything containing contact data.",
+      "why": "If you built something good, this is how everyone else gets it.",
+      "status": "core",
+      "roles": [
+        "BDR",
+        "AE",
+        "CSM"
+      ],
+      "author": "Kenny Fasehun",
+      "company": "Brightcove",
+      "added": "2026-08-11",
+      "updated": "2026-08-11",
+      "files": 1,
+      "hash": "c7c4db985d4dcc0f",
+      "install": "dist/lucy-publish.skill"
+    },
+    {
+      "name": "lucy-report",
+      "title": "Report Card",
+      "summary": "Counts your meetings booked and opps piped, works out which skills you were running, and sends the numbers back to the store as aggregates. Never sends your name or any prospect's.",
+      "why": "This is what lets the store rank skills on real outcomes instead of vibes.",
+      "status": "core",
+      "roles": [
+        "BDR",
+        "AE",
+        "CSM"
+      ],
+      "author": "Kenny Fasehun",
+      "company": "Brightcove",
+      "added": "2026-08-11",
+      "updated": "2026-08-11",
+      "files": 1,
+      "hash": "3adb4ead6c6c5730",
+      "install": "dist/lucy-report.skill"
+    },
+    {
+      "name": "lucy-sync",
+      "title": "Sync",
+      "summary": "Pulls the newest version of everything from the store and installs it. Tells you what changed and what you had edited locally before it touches anything.",
+      "why": "Say \"sync lucy\" whenever you want to be current.",
+      "status": "core",
+      "roles": [
+        "BDR",
+        "AE",
+        "CSM"
+      ],
+      "author": "Kenny Fasehun",
+      "company": "Brightcove",
+      "added": "2026-08-11",
+      "updated": "2026-08-11",
+      "files": 1,
+      "hash": "2cbeb14ebfa9cd03",
+      "install": "dist/lucy-sync.skill"
+    },
+    {
+      "name": "objection-handler",
+      "title": "Objection Handler",
+      "summary": "For when they say no. Researches the prospect's actual stack first, finds the real gap, then replies in a way that teaches something instead of begging for the meeting back.",
+      "why": "A decline is usually timing, not a no.",
+      "status": "core",
+      "roles": [
+        "BDR",
+        "AE",
+        "CSM"
+      ],
+      "author": "Kenny Fasehun",
+      "company": "Brightcove",
+      "added": "2026-08-10",
+      "updated": "2026-08-11",
+      "files": 1,
+      "hash": "33f90d16173be12f",
+      "install": "dist/objection-handler.skill"
+    },
+    {
+      "name": "prospecting-engine",
+      "title": "Prospecting Engine",
+      "summary": "The daily motion. Screens accounts, stages a batch, drafts the outreach, logs every outcome. Runs a different sequence depending on whether you are a BDR, AE, or CSM.",
+      "why": "This is the part that books meetings.",
+      "status": "core",
+      "roles": [
+        "BDR",
+        "AE",
+        "CSM"
+      ],
+      "author": "Kenny Fasehun",
+      "company": "Brightcove",
+      "added": "2026-08-10",
+      "updated": "2026-08-11",
+      "files": 1,
+      "hash": "1dc4c25c11286f2b",
+      "install": "dist/prospecting-engine.skill"
+    },
+    {
+      "name": "prospecting-onboarding",
+      "title": "Onboarding",
+      "summary": "Sets Lucy up for you in about 20 minutes. Interviews you, writes your config, checks your connectors, builds your contact repository, and stages your first batch.",
+      "why": "Start here. Everything else assumes this has run.",
+      "status": "core",
+      "roles": [
+        "BDR",
+        "AE",
+        "CSM"
+      ],
+      "author": "Kenny Fasehun",
+      "company": "Brightcove",
+      "added": "2026-08-10",
+      "updated": "2026-08-11",
+      "files": 2,
+      "hash": "6b7719166cda43e9",
+      "install": "dist/prospecting-onboarding.skill"
+    },
+    {
+      "name": "warm-opener",
+      "title": "Warm Opener",
+      "summary": "Researches a prospect's public interests and location so the message opens with something real, a result, a local event, something they posted, before the business bit.",
+      "why": "Warmth is the single biggest lift in the field data so far.",
+      "status": "optional",
+      "roles": [
+        "BDR",
+        "AE",
+        "CSM"
+      ],
+      "author": "Kenny Fasehun",
+      "company": "Brightcove",
+      "added": "2026-08-10",
+      "updated": "2026-08-11",
+      "files": 1,
+      "hash": "ac3905f08e5fbc52",
+      "install": "dist/warm-opener.skill"
+    }
+  ]
+}, "data/fleet.json": {
+  "generated": "2026-08-11T14:40:07Z",
+  "machines_reporting": 1,
+  "reports_received": 0,
+  "versions": {
+    "1.0.0": 1
+  },
+  "adoption": {
+    "call-needs-assessment": 1,
+    "human-messaging": 1,
+    "objection-handler": 1,
+    "warm-opener": 1
+  },
+  "drift": {
+    "call-needs-assessment": 1,
+    "human-messaging": 1,
+    "objection-handler": 1,
+    "warm-opener": 1
+  },
+  "unpublished": {
+    "gmail-draft-cleanup": 1,
+    "opp-gap-audit": 1,
+    "outreach-contact-repository": 1,
+    "pending-hold-followup": 1
+  },
+  "totals": {},
+  "per_skill": {},
+  "caveat": "Aggregates only. Skills running alongside outcomes, not proven to cause them."
+} };
+window.fetch = function (url) {
+  var key = String(url).replace(/^\.\//, "");
+  var body = window.__LUCY__[key];
+  return Promise.resolve({ ok: !!body, status: body ? 200 : 404,
+    json: function () { return Promise.resolve(body); } });
+};
+</script>
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c =>
+  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmtDate = (d) => {
+  if (!d) return "—";
+  const t = new Date(d);
+  return isNaN(t) ? esc(d) : t.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+};
+const daysAgo = (d) => {
+  if (!d) return Infinity;
+  const t = new Date(d);
+  return isNaN(t) ? Infinity : (Date.now() - t) / 86400000;
+};
+
+let SKILLS = [], FLEET = null, filter = "all", query = "", REPO = "";
+
+async function load() {
+  try {
+    const r = await fetch("data/skills.json", { cache: "no-store" });
+    if (!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    SKILLS = d.skills || [];
+    $("#version").textContent = d.version || "—";
+    $("#skill-count").textContent = SKILLS.length;
+    $("#generated").textContent = fmtDate(d.generated);
+    if (d.product) {
+      if (d.product.tagline) $("#tagline").textContent = d.product.tagline;
+      if (d.product.repo) { REPO = d.product.repo; $("#repo-link").href = d.product.repo; }
+    }
+  } catch (e) {
+    $("#grid").innerHTML = '<div class="empty">Could not load the catalog. ' +
+      'Run <code>scripts/package.sh</code> and commit the result.</div>';
+  }
+  try {
+    const r = await fetch("data/fleet.json", { cache: "no-store" });
+    if (r.ok) FLEET = await r.json();
+  } catch (e) { /* fleet is optional */ }
+  render(); renderFleet(); renderPerf();
+}
+
+function adoption(name) {
+  return (FLEET && FLEET.adoption && FLEET.adoption[name]) || 0;
+}
+
+function render() {
+  const list = SKILLS.filter(s => {
+    if (filter === "core" && s.status !== "core") return false;
+    if (["BDR", "AE", "CSM"].includes(filter) && !(s.roles || []).includes(filter)) return false;
+    if (!query) return true;
+    const hay = [s.name, s.title, s.summary, s.why, s.author, (s.roles || []).join(" ")]
+      .join(" ").toLowerCase();
+    return hay.includes(query);
+  });
+
+  // Core first, then most recently updated.
+  list.sort((a, b) => {
+    if ((a.status === "core") !== (b.status === "core")) return a.status === "core" ? -1 : 1;
+    return daysAgo(a.updated || a.added) - daysAgo(b.updated || b.added);
+  });
+
+  if (!list.length) {
+    $("#grid").innerHTML = '<div class="empty">Nothing matches that.</div>';
+    return;
+  }
+
+  $("#grid").innerHTML = list.map(s => {
+    const isNew = daysAgo(s.added) <= 14;
+    const users = adoption(s.name);
+    const drift = (FLEET && FLEET.drift && FLEET.drift[s.name]) || 0;
+    return `
+    <article class="card" id="${esc(s.name)}">
+      <h3>${esc(s.title || s.name)}</h3>
+      <div class="slug">${esc(s.name)}</div>
+      <div class="badges">
+        ${s.status === "core" ? '<span class="badge core">Core</span>'
+                              : '<span class="badge">Optional</span>'}
+        ${isNew ? '<span class="badge new">New</span>' : ""}
+        ${(s.roles || []).map(r => `<span class="badge">${esc(r)}</span>`).join("")}
+      </div>
+      <p>${esc(s.summary)}</p>
+      ${s.why ? `<p class="why">${esc(s.why)}</p>` : ""}
+      <footer>
+        <a class="btn" href="${esc(s.install)}" download>Install</a>
+        ${REPO ? `<a class="btn ghost" href="${esc(REPO)}/tree/main/skills/${esc(s.name)}">Read it</a>` : ""}
+        <span style="margin-left:auto; text-align:right">
+          ${esc(s.author)}${s.company ? ", " + esc(s.company) : ""}<br>
+          ${users ? users + (users === 1 ? " seller" : " sellers") : "no installs yet"}${drift ? ", " + drift + " edited" : ""}
+        </span>
+      </footer>
+    </article>`;
+  }).join("");
+}
+
+function renderFleet() {
+  if (!FLEET || !FLEET.machines_reporting) {
+    $("#fleet-stats").innerHTML = "";
+    $("#fleet-detail").innerHTML = '<div class="empty">' +
+      'No machines have checked in yet. Each seller\'s Lucy reports its own version when they ' +
+      'say <code>sync lucy</code>. Until then, nobody can say who is running what, which is ' +
+      'exactly the problem this page exists to solve.</div>';
+    return;
+  }
+  const versions = FLEET.versions || {};
+  const spread = Object.keys(versions).length;
+  const unpublished = Object.keys(FLEET.unpublished || {}).length;
+  const drifted = Object.values(FLEET.drift || {}).reduce((a, b) => a + b, 0);
+
+  $("#fleet-stats").innerHTML = [
+    [FLEET.machines_reporting, "machines reporting"],
+    [spread, spread === 1 ? "version in use" : "different versions in use"],
+    [drifted, "locally edited skills"],
+    [unpublished, "unpublished skills spotted"],
+  ].map(([v, k]) => `<div class="stat"><div class="v">${v}</div><div class="k">${k}</div></div>`).join("");
+
+  let html = "";
+  if (spread > 1) {
+    html += `<div class="note"><b>${spread} versions are live at once.</b> ` +
+      `Tell people to say <code>sync lucy</code>.</div>`;
+  }
+  html += '<table><thead><tr><th>Version</th><th class="num">Machines</th></tr></thead><tbody>' +
+    Object.entries(versions).sort().map(([v, n]) =>
+      `<tr><td><code>${esc(v)}</code></td><td class="num">${n}</td></tr>`).join("") +
+    "</tbody></table>";
+
+  if (unpublished) {
+    html += '<h2 style="margin-top:28px">Not in the store</h2>' +
+      '<p style="color:var(--muted); font-size:13.5px; margin-top:-8px">' +
+      'Skills someone is running that nobody else can get. Some are personal, some are worth ' +
+      'publishing. Worth asking about either way.</p>' +
+      '<table><thead><tr><th>Skill</th><th class="num">Machines</th></tr></thead><tbody>' +
+      Object.entries(FLEET.unpublished).sort((a, b) => b[1] - a[1]).map(([s, n]) =>
+        `<tr><td><code>${esc(s)}</code></td><td class="num">${n}</td></tr>`).join("") +
+      "</tbody></table>";
+  }
+  $("#fleet-detail").innerHTML = html;
+}
+
+function renderPerf() {
+  const t = (FLEET && FLEET.totals) || {};
+  const reports = (FLEET && FLEET.reports_received) || 0;
+  if (!reports) {
+    $("#perf-stats").innerHTML = "";
+    $("#perf-detail").innerHTML = '<div class="empty">' +
+      'No report cards yet. Lucy sends counts, never names, once a week. ' +
+      'Say <code>send my report</code> to be the first.</div>';
+    return;
+  }
+  const rate = t.contacts_touched ? (100 * (t.meetings_booked || 0) / t.contacts_touched) : null;
+  $("#perf-stats").innerHTML = [
+    [reports, reports === 1 ? "report card in" : "report cards in"],
+    [t.meetings_booked ?? "—", "meetings booked"],
+    [t.meetings_held ?? "—", "meetings held"],
+    [t.opps_piped ?? "—", "opps piped"],
+    [rate === null ? "—" : rate.toFixed(1) + "%", "booked per contact touched"],
+  ].map(([v, k]) => `<div class="stat"><div class="v">${v}</div><div class="k">${k}</div></div>`).join("");
+
+  const per = (FLEET && FLEET.per_skill) || {};
+  const rows = Object.entries(per).sort((a, b) =>
+    (b[1].meetings_booked || 0) - (a[1].meetings_booked || 0));
+  if (!rows.length) { $("#perf-detail").innerHTML = ""; return; }
+  $("#perf-detail").innerHTML =
+    '<table><thead><tr><th>Skill</th><th class="num">Reports</th>' +
+    '<th class="num">Booked</th><th class="num">Held</th><th class="num">Opps</th>' +
+    '</tr></thead><tbody>' +
+    rows.map(([name, c]) => {
+      const s = SKILLS.find(x => x.name === name);
+      return `<tr><td>${esc(s ? s.title : name)}</td>` +
+        `<td class="num">${c.reports || 0}</td>` +
+        `<td class="num">${c.meetings_booked || 0}</td>` +
+        `<td class="num">${c.meetings_held || 0}</td>` +
+        `<td class="num">${c.opps_piped || 0}</td></tr>`;
+    }).join("") +
+    '</tbody></table>' +
+    '<p style="color:var(--dim); font-size:12.5px">' +
+    'A seller running five skills contributes their whole week to all five rows. ' +
+    'These columns overlap heavily and do not add up to anything.</p>';
+}
+
+$("#q").addEventListener("input", e => { query = e.target.value.toLowerCase().trim(); render(); });
+document.querySelectorAll(".chip").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".chip").forEach(o => o.setAttribute("aria-pressed", "false"));
+  b.setAttribute("aria-pressed", "true");
+  filter = b.dataset.filter; render();
+}));
+
+load();
+</script>
+</body>
+</html>

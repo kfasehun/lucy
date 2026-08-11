@@ -3,10 +3,10 @@
     "name": "Lucy",
     "tagline": "The shared skill store for Bending Spoons sellers.",
     "channel": "#kenny-machine",
-    "repo": "https://github.com/REPLACE-ME/lucy"
+    "repo": "https://github.com/kfasehun/lucy"
   },
   "version": "1.0.0",
-  "generated": "2026-08-11T14:38:15Z",
+  "generated": "2026-08-11T15:10:25Z",
   "skills": [
     {
       "name": "call-needs-assessment",
@@ -80,7 +80,7 @@
       "added": "2026-08-11",
       "updated": "2026-08-11",
       "files": 1,
-      "hash": "4f4359a053d1e65b",
+      "hash": "c7c4db985d4dcc0f",
       "install": "dist/lucy-publish.skill"
     },
     {
@@ -118,7 +118,7 @@
       "added": "2026-08-11",
       "updated": "2026-08-11",
       "files": 1,
-      "hash": "2cbeb14ebfa9cd03",
+      "hash": "5e56b94f06b7e74c",
       "install": "dist/lucy-sync.skill"
     },
     {

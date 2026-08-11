@@ -11,15 +11,21 @@ Should take about five minutes.
 Point Claude Code at the `lucy` folder and paste this:
 
 ```
-Create a public GitHub repo called lucy under my account, then:
+This folder is a git repo with three commits already in it. Please:
 
-1. Replace every occurrence of REPLACE-ME with my GitHub username in these four files:
+1. Delete the scaffolding leftovers: .git-stale-do-not-use/, any .git-old-* folder,
+   the file _t, and dist/_probe. They are junk from the environment this was built in
+   and are already gitignored.
+2. Replace every occurrence of REPLACE-ME with my GitHub username in these four files:
    README.md, registry/meta.json, .claude-plugin/plugin.json, skills/lucy-sync/SKILL.md
-2. Run scripts/package.sh and commit the result.
-3. Push to main.
-4. Enable GitHub Pages, source = main branch, /docs folder.
-5. Tell me the live URL.
+3. Run scripts/package.sh and commit everything.
+4. Create a public GitHub repo called lucy under my account and push to main.
+5. Enable GitHub Pages, source = main branch, /docs folder.
+6. Tell me the live URL.
 ```
+
+If anything about the git history looks off, there is a clean copy of the whole repo at
+`lucy-1.0.0.zip` next to this folder. Unzip that instead and start from step 2.
 
 Public is deliberate. It means nobody needs a login to browse or install, which was the
 whole point. It is safe because there is no data in here, and `scripts/package.sh` fails

@@ -4,7 +4,7 @@ The shared skill store for Bending Spoons sellers.
 
 Lucy is a set of skills that runs inside Claude and books meetings: it screens accounts, drafts human messages, handles objections, recovers no-shows, and keeps a repository of every contact and outcome. It is role-aware. BDRs run invite-first, AEs run email-first, CSMs run relationship-first, all from one line in a config file.
 
-**Browse and install: https://REPLACE-ME.github.io/lucy/**
+**Browse and install: https://kfasehun.github.io/lucy/**
 
 ## Install
 

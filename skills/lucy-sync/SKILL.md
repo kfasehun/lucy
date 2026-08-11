@@ -16,7 +16,7 @@ Read `SELLER-CONFIG.md` in the seller's working folder. The `Lucy store` section
 - repo: the URL in this skill's `STORE_URL` below
 - clone path: `{WORKING_FOLDER}/.lucy-store`
 
-`STORE_URL`: https://github.com/REPLACE-ME/lucy
+`STORE_URL`: https://github.com/kfasehun/lucy
 
 ## Step 1: get the store
 

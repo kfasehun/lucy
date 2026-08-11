@@ -77,10 +77,14 @@ New skill in Lucy: Cold Call Recap
 Turns a cold-call transcript into the follow-up email plus the calendar invite,
 using the transcript and the CRM record rather than a template.
 
-Danoush used it on a Rakuten call yesterday. The draft needed one edit.
+Used it on a call yesterday. The draft needed one edit.
 
 Install: <store URL>#cold-call-recap  (or say "sync lucy")
 ```
+
+Note what the example does not contain: no prospect company, no colleague's name. The
+announcement goes in Slack, but the registry entry it is based on goes in a public repo, so
+keep both clean.
 
 If the skill is being proposed as core, add one line saying so and tagging the store owner for the call.
 

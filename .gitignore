@@ -43,5 +43,6 @@ node_modules/
 
 # Leftovers from the environment this repo was scaffolded in. Safe to delete.
 .git-stale-do-not-use/
+.git-old-*/
 _t
 _probe
