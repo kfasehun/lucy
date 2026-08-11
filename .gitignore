@@ -40,3 +40,8 @@ token*
 __pycache__/
 *.pyc
 node_modules/
+
+# Leftovers from the environment this repo was scaffolded in. Safe to delete.
+.git-stale-do-not-use/
+_t
+_probe
