@@ -132,12 +132,18 @@ drifted = collections.Counter()
 local_only = collections.Counter()
 versions = collections.Counter()
 
+# beacon.sh reports "differs"; lucy-sync refines that into "outdated" or
+# "edited-locally". Both vocabularies are accepted so a machine that has only ever
+# run the script still counts.
+INSTALLED_STATES = {"current", "outdated", "edited-locally", "differs"}
+DRIFT_STATES = {"edited-locally", "differs"}
+
 for m in machines:
     versions[m.get("lucy_version", "unknown")] += 1
     for skill, state in (m.get("skills") or {}).items():
-        if state in ("current", "outdated", "edited-locally"):
+        if state in INSTALLED_STATES:
             installed[skill] += 1
-        if state == "edited-locally":
+        if state in DRIFT_STATES:
             drifted[skill] += 1
         if state == "local-only":
             local_only[skill] += 1

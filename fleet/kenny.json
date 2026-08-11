@@ -1,0 +1,24 @@
+{
+  "seller": "kenny",
+  "company": "Brightcove",
+  "role": "BDR",
+  "lucy_version": "1.0.0",
+  "store_commit": "9c867d1",
+  "synced_at": "2026-08-11T14:36:33Z",
+  "skills": {
+    "call-needs-assessment": "differs",
+    "gmail-draft-cleanup": "local-only",
+    "human-messaging": "differs",
+    "objection-handler": "differs",
+    "opp-gap-audit": "local-only",
+    "outreach-contact-repository": "local-only",
+    "pending-hold-followup": "local-only",
+    "warm-opener": "differs",
+    "followup-noshow": "missing",
+    "lucy-publish": "missing",
+    "lucy-report": "missing",
+    "lucy-sync": "missing",
+    "prospecting-engine": "missing",
+    "prospecting-onboarding": "missing"
+  }
+}

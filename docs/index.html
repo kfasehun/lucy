@@ -208,7 +208,7 @@ const daysAgo = (d) => {
   return isNaN(t) ? Infinity : (Date.now() - t) / 86400000;
 };
 
-let SKILLS = [], FLEET = null, filter = "all", query = "";
+let SKILLS = [], FLEET = null, filter = "all", query = "", REPO = "";
 
 async function load() {
   try {
@@ -221,7 +221,7 @@ async function load() {
     $("#generated").textContent = fmtDate(d.generated);
     if (d.product) {
       if (d.product.tagline) $("#tagline").textContent = d.product.tagline;
-      if (d.product.repo) $("#repo-link").href = d.product.repo;
+      if (d.product.repo) { REPO = d.product.repo; $("#repo-link").href = d.product.repo; }
     }
   } catch (e) {
     $("#grid").innerHTML = '<div class="empty">Could not load the catalog. ' +
@@ -277,7 +277,7 @@ function render() {
       ${s.why ? `<p class="why">${esc(s.why)}</p>` : ""}
       <footer>
         <a class="btn" href="${esc(s.install)}" download>Install</a>
-        <a class="btn ghost" href="https://github.com/REPLACE-ME/lucy/tree/main/skills/${esc(s.name)}">Read it</a>
+        ${REPO ? `<a class="btn ghost" href="${esc(REPO)}/tree/main/skills/${esc(s.name)}">Read it</a>` : ""}
         <span style="margin-left:auto; text-align:right">
           ${esc(s.author)}${s.company ? ", " + esc(s.company) : ""}<br>
           ${users ? users + (users === 1 ? " seller" : " sellers") : "no installs yet"}${drift ? ", " + drift + " edited" : ""}
@@ -319,9 +319,10 @@ function renderFleet() {
     "</tbody></table>";
 
   if (unpublished) {
-    html += '<h2 style="margin-top:28px">Built but not shared</h2>' +
+    html += '<h2 style="margin-top:28px">Not in the store</h2>' +
       '<p style="color:var(--muted); font-size:13.5px; margin-top:-8px">' +
-      'Skills found on someone\'s machine that are not in the store. Worth asking about.</p>' +
+      'Skills someone is running that nobody else can get. Some are personal, some are worth ' +
+      'publishing. Worth asking about either way.</p>' +
       '<table><thead><tr><th>Skill</th><th class="num">Machines</th></tr></thead><tbody>' +
       Object.entries(FLEET.unpublished).sort((a, b) => b[1] - a[1]).map(([s, n]) =>
         `<tr><td><code>${esc(s)}</code></td><td class="num">${n}</td></tr>`).join("") +

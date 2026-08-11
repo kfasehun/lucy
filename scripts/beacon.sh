@@ -63,6 +63,15 @@ try:
 except Exception:
     core = set()
 
+# Skills that come from somewhere other than Lucy. Without this, every seller looks
+# like they are sitting on twenty unpublished skills when really they just have the
+# standard document and scheduling ones installed.
+try:
+    ignore = set(json.load(open(os.path.join(root, "registry", "meta.json"))).get("ignore", []))
+except Exception:
+    ignore = set()
+local = {n: h for n, h in local.items() if n not in ignore}
+
 # States: current / differs / local-only / missing.
 # The beacon cannot tell "outdated" from "edited locally" on its own; that needs
 # the git history of each file, which lucy-sync does. Anything differing is

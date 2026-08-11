@@ -5,6 +5,26 @@
     "channel": "#kenny-machine",
     "repo": "https://github.com/REPLACE-ME/lucy"
   },
+  "_ignore_comment": "Skills that come from somewhere other than Lucy. The beacon skips these entirely, so they never show up as 'not in the store'. Add to this list rather than letting the fleet page fill with noise.",
+  "ignore": [
+    "consolidate-memory",
+    "docx",
+    "explain-usage",
+    "morning",
+    "pdf",
+    "pptx",
+    "schedule",
+    "setup-cowork",
+    "skill-creator",
+    "xlsx",
+    "bgs-deal-coach",
+    "customer-example",
+    "ott-partner-recommender",
+    "streamyard-enterprise-crosssell",
+    "support-reply-drafter",
+    "brand-check",
+    "brightcove-brand"
+  ],
   "skills": {
     "prospecting-onboarding": {
       "title": "Onboarding",

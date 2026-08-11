@@ -1,0 +1,29 @@
+{
+  "generated": "2026-08-11T14:38:15Z",
+  "machines_reporting": 1,
+  "reports_received": 0,
+  "versions": {
+    "1.0.0": 1
+  },
+  "adoption": {
+    "call-needs-assessment": 1,
+    "human-messaging": 1,
+    "objection-handler": 1,
+    "warm-opener": 1
+  },
+  "drift": {
+    "call-needs-assessment": 1,
+    "human-messaging": 1,
+    "objection-handler": 1,
+    "warm-opener": 1
+  },
+  "unpublished": {
+    "gmail-draft-cleanup": 1,
+    "opp-gap-audit": 1,
+    "outreach-contact-repository": 1,
+    "pending-hold-followup": 1
+  },
+  "totals": {},
+  "per_skill": {},
+  "caveat": "Aggregates only. Skills running alongside outcomes, not proven to cause them."
+}
