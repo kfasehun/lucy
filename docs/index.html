@@ -404,7 +404,7 @@
     <a class="brand" href="#">Lucy<span class="dot">.</span></a>
     <div class="nav-links">
       <a href="#skills" class="hide-sm">Skills</a>
-      <a data-route="fleet" class="hide-sm">Fleet</a>
+      <a data-route="fleet" id="nav-fleet" class="hide-sm">Fleet</a>
       <a data-route="whats-new" class="hide-sm">What&rsquo;s new</a>
       <a id="nav-repo" href="#" class="hide-sm">Source</a>
       <a data-route="upload" class="nav-cta">Publish a skill</a>
@@ -552,6 +552,7 @@ function iconFor(name, big) {
 
 let SKILLS = [], FLEET = null, CHANGELOG = null;
 let filter = "all", query = "", sort = "rec", REPO = "", UPLOAD = "", CHANNEL = "";
+let OPS_WORTH = false;  // Fleet/Performance only earn a spot once ≥2 machines report
 let upFiles = [];
 
 async function load() {
@@ -580,6 +581,11 @@ async function load() {
     const r = await fetch("data/fleet.json", { cache: "no-store" });
     if (r.ok) FLEET = await r.json();
   } catch (e) { /* fleet is optional */ }
+  // Fleet/Performance are ops views — worthless with only one machine reporting.
+  // Hide the section + its nav link until at least a couple of sellers have synced.
+  OPS_WORTH = !!(FLEET && FLEET.machines_reporting >= 2);
+  const navFleet = document.getElementById("nav-fleet");
+  if (navFleet && !OPS_WORTH) navFleet.style.display = "none";
   render(); renderFleet(); renderPerf();
   applyRoute();  // open a deep-linked skill / changelog if the URL asks for one
 }
@@ -1139,6 +1145,7 @@ function applyRoute() {
   if (h === "upload") { openUpload(); return; }
   if (h === "fleet") {                             // reveal the stowed ops views and scroll to them
     hideSheet();
+    if (!OPS_WORTH) return;                         // nothing meaningful to show yet — stay on the grid
     document.body.classList.add("show-ops");
     const f = document.getElementById("fleet");
     if (f) f.scrollIntoView({ behavior: "smooth" });
