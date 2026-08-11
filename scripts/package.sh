@@ -70,6 +70,27 @@ def last_changed(folder):
     except Exception:
         return None
 
+def skill_doc(folder):
+    """Pull the store-facing detail out of SKILL.md: the frontmatter
+    `description` (the when-to-use line) and the `## ` section outline."""
+    desc, sections = "", []
+    try:
+        text = open(os.path.join(folder, "SKILL.md"), encoding="utf-8").read()
+    except Exception:
+        return desc, sections
+    body = text
+    if text.startswith("---"):
+        end = text.find("\n---", 3)
+        if end != -1:
+            fm, body = text[3:end], text[end + 4:]
+            for line in fm.splitlines():
+                if line.strip().lower().startswith("description:"):
+                    desc = line.split(":", 1)[1].strip().strip('"').strip("'")
+    for line in body.splitlines():
+        if line.startswith("## "):
+            sections.append(line[3:].strip())
+    return desc, sections
+
 plugin = json.load(open(".claude-plugin/plugin.json"))
 skills = []
 
@@ -83,11 +104,14 @@ for name in sorted(os.listdir("skills")):
         m = {"title": name, "summary": "", "why": "", "status": "optional",
              "roles": [], "author": "unknown", "company": "", "added": None}
     files = sum(len(fs) for _, _, fs in os.walk(folder))
+    desc, sections = skill_doc(folder)
     skills.append({
         "name": name,
         "title": m.get("title", name),
         "summary": m.get("summary", ""),
         "why": m.get("why", ""),
+        "description": desc,
+        "sections": sections,
         "status": m.get("status", "optional"),
         "roles": m.get("roles", []),
         "author": m.get("author", "unknown"),

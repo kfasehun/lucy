@@ -33,6 +33,7 @@
     -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
     overflow-x: hidden;
   }
+  body.locked { overflow: hidden; }
   a { color: inherit; }
   .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
 
@@ -47,7 +48,7 @@
   .brand { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; text-decoration: none; }
   .brand .dot { color: var(--red); }
   .nav-links { display: flex; gap: 22px; align-items: center; }
-  .nav-links a { color: var(--muted); text-decoration: none; font-size: 13.5px; transition: color .2s; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 13.5px; transition: color .2s; cursor: pointer; }
   .nav-links a:hover { color: var(--text); }
   .nav-links .sync { color: var(--dim); }
   .nav-links code {
@@ -90,7 +91,7 @@
   .btn-secondary {
     background: var(--surface-2); color: var(--text); text-decoration: none; font-weight: 500;
     font-size: 15px; padding: 12px 24px; border-radius: 980px; border: 1px solid var(--hair-strong);
-    transition: background .2s, border-color .2s;
+    transition: background .2s, border-color .2s; cursor: pointer;
   }
   .btn-secondary:hover { background: var(--surface-3); border-color: var(--muted); }
 
@@ -100,7 +101,7 @@
   }
   .meta-strip b { color: var(--text); font-weight: 600; }
   .meta-strip .sep { color: var(--hair-strong); }
-  .meta-strip a { color: var(--red-bright); text-decoration: none; }
+  .meta-strip a { color: var(--red-bright); text-decoration: none; cursor: pointer; }
   .meta-strip a:hover { text-decoration: underline; }
 
   /* ---------- how it works ---------- */
@@ -143,7 +144,7 @@
     background: var(--surface-3); color: var(--text);
     box-shadow: 0 1px 2px rgba(0,0,0,0.5), inset 0 0 0 1px var(--hair);
   }
-  .search { position: relative; flex: 1; min-width: 220px; }
+  .search { position: relative; flex: 1; min-width: 200px; }
   .search svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); opacity: .5; }
   .search input {
     width: 100%; background: var(--surface-2); color: var(--text);
@@ -153,16 +154,29 @@
   .search input::placeholder { color: var(--dim); }
   .search input:focus { outline: none; border-color: var(--red);
                         box-shadow: 0 0 0 4px rgba(255,69,58,0.15); }
+  .sortwrap { position: relative; }
+  .sortwrap::after {
+    content: ""; position: absolute; right: 14px; top: 50%; width: 8px; height: 8px;
+    border-right: 1.6px solid var(--muted); border-bottom: 1.6px solid var(--muted);
+    transform: translateY(-70%) rotate(45deg); pointer-events: none;
+  }
+  select.sort {
+    appearance: none; -webkit-appearance: none; background: var(--surface-2); color: var(--text);
+    border: 1px solid var(--hair); border-radius: 980px; padding: 11px 36px 11px 16px;
+    font-size: 14px; font-family: inherit; cursor: pointer; transition: border-color .2s;
+  }
+  select.sort:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 4px rgba(255,69,58,0.15); }
+  select.sort option { background: #17171a; color: var(--text); }
 
   /* ---------- skill grid (app store) ---------- */
   .grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(348px, 1fr)); }
   .card {
     background: var(--surface); border: 1px solid var(--hair); border-radius: var(--radius);
-    padding: 22px; display: flex; flex-direction: column;
+    padding: 22px; display: flex; flex-direction: column; cursor: pointer;
     transition: transform .25s cubic-bezier(.2,.7,.3,1), border-color .25s, box-shadow .25s;
   }
-  .card:hover {
-    transform: translateY(-5px); border-color: var(--hair-strong);
+  .card:hover, .card:focus-visible {
+    transform: translateY(-5px); border-color: var(--hair-strong); outline: none;
     box-shadow: 0 18px 46px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,69,58,0.12);
   }
   .card-top { display: flex; align-items: center; gap: 15px; }
@@ -171,6 +185,8 @@
     display: grid; place-items: center; overflow: hidden;
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 6px 16px rgba(0,0,0,0.45);
   }
+  .appicon.lg { width: 76px; height: 76px; }
+  .appicon.lg svg { width: 40px; height: 40px; }
   .appicon::after {
     content: ""; position: absolute; inset: 0;
     background: radial-gradient(120% 80% at 30% 12%, rgba(255,255,255,0.4), transparent 55%);
@@ -206,8 +222,6 @@
   .card-foot .who { min-width: 0; }
   .card-foot .who b { color: var(--muted); font-weight: 500; }
   .card-foot .installs { margin-left: auto; text-align: right; white-space: nowrap; }
-  .card-foot .readit { color: var(--muted); text-decoration: none; white-space: nowrap; }
-  .card-foot .readit:hover { color: var(--red-bright); }
 
   /* ---------- stats + tables ---------- */
   .stats { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(158px, 1fr)); }
@@ -248,14 +262,96 @@
     color: var(--red-bright); background: rgba(255,69,58,0.10); padding: 1px 6px; border-radius: 5px;
   }
 
+  /* ---------- overlay / sheet ---------- */
+  .overlay {
+    position: fixed; inset: 0; z-index: 200; display: none;
+    align-items: flex-start; justify-content: center; padding: 40px 20px;
+    background: rgba(0,0,0,0.62); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    overflow-y: auto;
+  }
+  .overlay.open { display: flex; animation: fade .2s ease; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  .sheet {
+    position: relative; width: 100%; max-width: 720px; margin: auto;
+    background: linear-gradient(180deg, #141416, #0e0e10);
+    border: 1px solid var(--hair-strong); border-radius: var(--radius-lg);
+    box-shadow: 0 40px 120px rgba(0,0,0,0.7); padding: 34px;
+    animation: rise .28s cubic-bezier(.2,.7,.3,1);
+  }
+  @keyframes rise { from { transform: translateY(16px); opacity: .6; } to { transform: translateY(0); opacity: 1; } }
+  .sheet-close {
+    position: absolute; top: 18px; right: 18px; width: 34px; height: 34px; border-radius: 50%;
+    border: 1px solid var(--hair); background: var(--surface-2); color: var(--muted);
+    font-size: 18px; line-height: 1; cursor: pointer; display: grid; place-items: center;
+    transition: background .2s, color .2s;
+  }
+  .sheet-close:hover { background: var(--surface-3); color: var(--text); }
+
+  .detail-top { display: flex; gap: 18px; align-items: center; }
+  .detail-top .card-head h3 { white-space: normal; font-size: 24px; }
+  .detail-top .slug { font-size: 13px; }
+  .detail-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 22px 0 6px; }
+  .detail-actions .get { align-self: auto; font-size: 14px; padding: 11px 26px; }
+  .detail-actions .readlink { color: var(--muted); text-decoration: none; font-size: 14px; }
+  .detail-actions .readlink:hover { color: var(--red-bright); }
+  .detail h4 {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--dim);
+    margin: 26px 0 12px; font-weight: 600;
+  }
+  .detail p.body { margin: 0; font-size: 15px; line-height: 1.6; color: var(--text); }
+  .detail .whento { margin: 0; font-size: 14.5px; line-height: 1.6; color: var(--muted); }
+  .outline { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .outline li {
+    display: flex; align-items: center; gap: 10px; font-size: 14.5px; color: var(--text);
+    background: var(--surface-2); border: 1px solid var(--hair); border-radius: 10px; padding: 10px 14px;
+  }
+  .outline li::before {
+    content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--red); box-shadow: 0 0 8px rgba(255,69,58,0.6);
+  }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; counter-reset: s; }
+  .steps li { display: flex; gap: 14px; align-items: flex-start; font-size: 14.5px; color: var(--text); line-height: 1.5; }
+  .steps li::before {
+    counter-increment: s; content: counter(s); flex: none; width: 26px; height: 26px; border-radius: 50%;
+    background: rgba(255,69,58,0.12); color: var(--red); border: 1px solid rgba(255,69,58,0.3);
+    display: grid; place-items: center; font-size: 13px; font-weight: 700;
+  }
+  .steps code, .detail code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px;
+    color: var(--red-bright); background: rgba(255,69,58,0.10); padding: 1px 6px; border-radius: 5px;
+  }
+  .metatable { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-top: 4px; }
+  .metatable .m { background: var(--surface-2); border: 1px solid var(--hair); border-radius: 10px; padding: 12px 14px; }
+  .metatable .m .k { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.05em; }
+  .metatable .m .v { font-size: 14.5px; margin-top: 3px; font-variant-numeric: tabular-nums; }
+  .metatable .m .v code { background: none; padding: 0; color: var(--text); }
+
+  /* changelog markdown */
+  .md h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin: 26px 0 6px; }
+  .md h2:first-child { margin-top: 4px; }
+  .md h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--red-bright);
+           margin: 20px 0 8px; font-weight: 700; }
+  .md p { margin: 0 0 12px; font-size: 14.5px; line-height: 1.6; color: var(--muted); }
+  .md ul { margin: 0 0 14px; padding-left: 4px; list-style: none; display: grid; gap: 7px; }
+  .md li { position: relative; padding-left: 20px; font-size: 14.5px; line-height: 1.55; color: var(--text); }
+  .md li::before { content: ""; position: absolute; left: 4px; top: 9px; width: 5px; height: 5px;
+                   border-radius: 50%; background: var(--red); }
+  .md li ul { margin: 8px 0 0; }
+  .md strong { color: var(--text); font-weight: 650; }
+  .md code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px;
+             color: var(--red-bright); background: rgba(255,69,58,0.10); padding: 1px 6px; border-radius: 5px; }
+  .md hr { border: none; border-top: 1px solid var(--hair); margin: 26px 0; }
+
   @media (max-width: 720px) {
     .how { grid-template-columns: 1fr; }
     .hero { padding: 72px 0 48px; }
     .grid { grid-template-columns: 1fr; }
     .sec-head { align-items: flex-start; }
     .controls { width: 100%; }
+    .search { order: 3; width: 100%; flex-basis: 100%; }
     .seg { flex-wrap: wrap; }
     .nav-links .hide-sm { display: none; }
+    .sheet { padding: 26px 20px; }
   }
 </style>
 </head>
@@ -263,17 +359,15 @@
 
 <nav>
   <div class="wrap">
-    <a class="brand" href="#top">Lucy<span class="dot">.</span></a>
+    <a class="brand" href="#">Lucy<span class="dot">.</span></a>
     <div class="nav-links">
       <a href="#skills">Skills</a>
-      <a href="CHANGELOG.md" class="hide-sm">What&rsquo;s new</a>
+      <a data-route="whats-new" class="hide-sm">What&rsquo;s new</a>
       <a id="nav-repo" href="#" class="hide-sm">Source</a>
       <a class="sync hide-sm">Installed? say <code>sync lucy</code></a>
     </div>
   </div>
 </nav>
-
-<div id="top"></div>
 
 <header class="hero">
   <div class="wrap">
@@ -288,7 +382,7 @@
       <span>Version <b id="version">—</b></span><span class="sep">·</span>
       <span><b id="skill-count">—</b> skills</span><span class="sep">·</span>
       <span>Updated <b id="generated">—</b></span><span class="sep">·</span>
-      <a href="CHANGELOG.md">What changed</a>
+      <a data-route="whats-new">What changed</a>
     </div>
 
     <div class="how">
@@ -305,7 +399,7 @@
     <div class="sec-head">
       <div>
         <h2>Skills</h2>
-        <p class="sub">One click to install. Built by sellers, for sellers.</p>
+        <p class="sub">Tap any skill for the full story. One click to install.</p>
       </div>
       <div class="controls">
         <div class="seg" id="seg">
@@ -314,6 +408,14 @@
           <button data-filter="BDR" aria-pressed="false">BDR</button>
           <button data-filter="AE" aria-pressed="false">AE</button>
           <button data-filter="CSM" aria-pressed="false">CSM</button>
+        </div>
+        <div class="sortwrap">
+          <select class="sort" id="sort" aria-label="Sort skills">
+            <option value="rec">Recommended</option>
+            <option value="new">Newest</option>
+            <option value="installs">Most installed</option>
+            <option value="az">A–Z</option>
+          </select>
         </div>
         <div class="search">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -350,6 +452,13 @@
     No prospect data, contact lists, or individual numbers live in this repo. It is public on purpose.
   </div>
 </footer>
+
+<div class="overlay" id="overlay">
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Details">
+    <button class="sheet-close" id="sheet-close" aria-label="Close">&times;</button>
+    <div id="sheet-body"></div>
+  </div>
+</div>
 
 <script>
 const $ = (s) => document.querySelector(s);
@@ -392,14 +501,15 @@ const ICONS = {
   "prospecting-onboarding": { g: "linear-gradient(150deg,#ff7059,#ff2d55)", i: G.rocket },
   "warm-opener":            { g: "linear-gradient(150deg,#ffc53a,#ff5e3a)", i: G.sun },
 };
-function iconFor(name) {
+function iconFor(name, big) {
   const it = ICONS[name] || { g: "linear-gradient(150deg,#ff6a60,#d70015)", i: G.spark };
-  return '<div class="appicon" style="background:' + it.g + '">' +
+  return '<div class="appicon' + (big ? ' lg' : '') + '" style="background:' + it.g + '">' +
     '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' +
     it.i + '</svg></div>';
 }
 
-let SKILLS = [], FLEET = null, filter = "all", query = "", REPO = "";
+let SKILLS = [], FLEET = null, CHANGELOG = null;
+let filter = "all", query = "", sort = "rec", REPO = "";
 
 async function load() {
   try {
@@ -427,27 +537,35 @@ async function load() {
     if (r.ok) FLEET = await r.json();
   } catch (e) { /* fleet is optional */ }
   render(); renderFleet(); renderPerf();
+  applyRoute();  // open a deep-linked skill / changelog if the URL asks for one
 }
 
 function adoption(name) {
   return (FLEET && FLEET.adoption && FLEET.adoption[name]) || 0;
 }
 
+/* ---------- sorting ---------- */
+function sortList(list) {
+  const byRecent = (a, b) => daysAgo(a.updated || a.added) - daysAgo(b.updated || b.added);
+  if (sort === "new") return list.sort(byRecent);
+  if (sort === "az") return list.sort((a, b) => (a.title || a.name).localeCompare(b.title || b.name));
+  if (sort === "installs") return list.sort((a, b) => adoption(b.name) - adoption(a.name) || byRecent(a, b));
+  // recommended: core first, then most recent
+  return list.sort((a, b) => {
+    if ((a.status === "core") !== (b.status === "core")) return a.status === "core" ? -1 : 1;
+    return byRecent(a, b);
+  });
+}
+
 function render() {
-  const list = SKILLS.filter(s => {
+  const list = sortList(SKILLS.filter(s => {
     if (filter === "core" && s.status !== "core") return false;
     if (["BDR", "AE", "CSM"].includes(filter) && !(s.roles || []).includes(filter)) return false;
     if (!query) return true;
-    const hay = [s.name, s.title, s.summary, s.why, s.author, (s.roles || []).join(" ")]
+    const hay = [s.name, s.title, s.summary, s.why, s.description, s.author, (s.roles || []).join(" ")]
       .join(" ").toLowerCase();
     return hay.includes(query);
-  });
-
-  // Core first, then most recently updated.
-  list.sort((a, b) => {
-    if ((a.status === "core") !== (b.status === "core")) return a.status === "core" ? -1 : 1;
-    return daysAgo(a.updated || a.added) - daysAgo(b.updated || b.added);
-  });
+  }));
 
   if (!list.length) {
     $("#grid").innerHTML = '<div class="empty">Nothing matches that.</div>';
@@ -459,14 +577,14 @@ function render() {
     const users = adoption(s.name);
     const drift = (FLEET && FLEET.drift && FLEET.drift[s.name]) || 0;
     return `
-    <article class="card" id="${esc(s.name)}">
+    <article class="card" data-skill="${esc(s.name)}" tabindex="0" role="button" aria-label="${esc(s.title || s.name)} details">
       <div class="card-top">
         ${iconFor(s.name)}
         <div class="card-head">
           <h3>${esc(s.title || s.name)}</h3>
           <div class="slug">${esc(s.name)}</div>
         </div>
-        <a class="get" href="${esc(s.install)}" download>Get</a>
+        <a class="get" href="${esc(s.install)}" download data-get>Get</a>
       </div>
       <div class="badges">
         ${s.status === "core" ? '<span class="badge core">Core</span>'
@@ -479,12 +597,106 @@ function render() {
       <div class="card-foot">
         <span class="who"><b>${esc(s.author)}${s.company ? ", " + esc(s.company) : ""}</b></span>
         <span class="installs">${users ? users + (users === 1 ? " seller" : " sellers") : "no installs yet"}${drift ? " · " + drift + " edited" : ""}</span>
-        ${REPO ? `<a class="readit" href="${esc(REPO)}/tree/main/skills/${esc(s.name)}">Read&nbsp;&rsaquo;</a>` : ""}
       </div>
     </article>`;
   }).join("");
 }
 
+/* ---------- skill detail ---------- */
+function skillDetailHTML(s) {
+  const users = adoption(s.name);
+  const drift = (FLEET && FLEET.drift && FLEET.drift[s.name]) || 0;
+  const roleBadges = (s.roles || []).map(r => `<span class="badge">${esc(r)}</span>`).join("");
+  const outline = (s.sections || []).length
+    ? `<h4>What&rsquo;s inside</h4><ul class="outline">${s.sections.map(x => `<li>${esc(x)}</li>`).join("")}</ul>`
+    : "";
+  const whento = s.description
+    ? `<h4>When it fires</h4><p class="whento">${esc(s.description)}</p>` : "";
+  return `
+    <div class="detail">
+      <div class="detail-top">
+        ${iconFor(s.name, true)}
+        <div class="card-head">
+          <h3>${esc(s.title || s.name)}</h3>
+          <div class="slug">${esc(s.name)}</div>
+        </div>
+      </div>
+      <div class="badges">
+        ${s.status === "core" ? '<span class="badge core">Core</span>' : '<span class="badge">Optional</span>'}
+        ${daysAgo(s.added) <= 14 ? '<span class="badge new">New</span>' : ""}
+        ${roleBadges}
+      </div>
+      <p class="body">${esc(s.summary)}</p>
+      ${s.why ? `<p class="whento" style="margin-top:10px">${esc(s.why)}</p>` : ""}
+
+      <div class="detail-actions">
+        <a class="get" href="${esc(s.install)}" download>Get skill</a>
+        ${REPO ? `<a class="readlink" href="${esc(REPO)}/tree/main/skills/${esc(s.name)}" target="_blank" rel="noopener">Read the source on GitHub ›</a>` : ""}
+      </div>
+
+      ${whento}
+      ${outline}
+
+      <h4>Install it</h4>
+      <ol class="steps">
+        <li>Click <b>Get skill</b> above — a <code>${esc(s.name)}.skill</code> file downloads.</li>
+        <li>Open it in Claude and hit <b>Save skill</b>.</li>
+        <li>First time using Lucy? Say <code>onboard me</code>. Already set up? Say <code>sync lucy</code> to stay current.</li>
+      </ol>
+
+      <h4>Details</h4>
+      <div class="metatable">
+        <div class="m"><div class="k">Status</div><div class="v">${s.status === "core" ? "Core" : "Optional"}</div></div>
+        <div class="m"><div class="k">Roles</div><div class="v">${(s.roles || []).join(", ") || "—"}</div></div>
+        <div class="m"><div class="k">Added</div><div class="v">${fmtDate(s.added)}</div></div>
+        <div class="m"><div class="k">Updated</div><div class="v">${fmtDate(s.updated)}</div></div>
+        <div class="m"><div class="k">Files</div><div class="v">${s.files ?? "—"}</div></div>
+        <div class="m"><div class="k">Version</div><div class="v"><code>${esc(s.hash || "—")}</code></div></div>
+        <div class="m"><div class="k">Installs</div><div class="v">${users || 0}${drift ? " · " + drift + " edited" : ""}</div></div>
+        <div class="m"><div class="k">Author</div><div class="v">${esc(s.author)}</div></div>
+      </div>
+    </div>`;
+}
+
+/* ---------- changelog ---------- */
+function mdToHtml(md) {
+  const lines = String(md).replace(/\r/g, "").split("\n");
+  let html = "", inList = false;
+  const inline = (t) => esc(t)
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  const closeList = () => { if (inList) { html += "</ul>"; inList = false; } };
+  for (const raw of lines) {
+    const line = raw.replace(/\s+$/, "");
+    if (/^\s*---\s*$/.test(line)) { closeList(); html += "<hr>"; continue; }
+    if (/^#\s+/.test(line)) { closeList(); continue; }            // page title, skip
+    if (/^##\s+/.test(line)) { closeList(); html += "<h2>" + inline(line.replace(/^##\s+/, "")) + "</h2>"; continue; }
+    if (/^###\s+/.test(line)) { closeList(); html += "<h3>" + inline(line.replace(/^###\s+/, "")) + "</h3>"; continue; }
+    const li = line.match(/^(\s*)-\s+(.*)$/);
+    if (li) {
+      if (!inList) { html += "<ul>"; inList = true; }
+      html += "<li>" + inline(li[2]) + "</li>";
+      continue;
+    }
+    if (line.trim() === "") { closeList(); continue; }
+    closeList(); html += "<p>" + inline(line) + "</p>";
+  }
+  closeList();
+  return html;
+}
+
+async function changelogHTML() {
+  if (CHANGELOG == null) {
+    try {
+      const r = await fetch("CHANGELOG.md", { cache: "no-store" });
+      CHANGELOG = r.ok ? await r.text() : "";
+    } catch (e) { CHANGELOG = ""; }
+  }
+  if (!CHANGELOG) return '<div class="empty">Changelog is not available yet.</div>';
+  return '<h4 style="margin-top:0">What&rsquo;s new</h4><div class="md">' + mdToHtml(CHANGELOG) + "</div>";
+}
+
+/* ---------- fleet ---------- */
 function renderFleet() {
   if (!FLEET || !FLEET.machines_reporting) {
     $("#fleet-stats").innerHTML = "";
@@ -528,6 +740,7 @@ function renderFleet() {
   $("#fleet-detail").innerHTML = html;
 }
 
+/* ---------- performance ---------- */
 function renderPerf() {
   const t = (FLEET && FLEET.totals) || {};
   const reports = (FLEET && FLEET.reports_received) || 0;
@@ -569,13 +782,108 @@ function renderPerf() {
     'These columns overlap heavily and do not add up to anything.</p>';
 }
 
-$("#q").addEventListener("input", e => { query = e.target.value.toLowerCase().trim(); render(); });
+/* ---------- overlay + router ---------- */
+const overlay = $("#overlay");
+function showSheet(html) {
+  $("#sheet-body").innerHTML = html;
+  overlay.classList.add("open");
+  document.body.classList.add("locked");
+  $("#sheet").scrollTop = 0;
+  overlay.scrollTop = 0;
+}
+function hideSheet() {
+  overlay.classList.remove("open");
+  document.body.classList.remove("locked");
+}
+function baseHash() {
+  const p = new URLSearchParams();
+  if (filter !== "all") p.set("f", filter);
+  if (sort !== "rec") p.set("sort", sort);
+  if (query) p.set("q", query);
+  return p.toString();
+}
+function toBase() {
+  const b = baseHash();
+  if (("#" + b) === location.hash || (!b && (location.hash === "" || location.hash === "#"))) {
+    hideSheet();                 // hash already at base; just close
+  } else {
+    location.hash = b;           // triggers applyRoute via hashchange
+  }
+}
+function openSkill(name) {
+  const s = SKILLS.find(x => x.name === name);
+  if (!s) { hideSheet(); return; }
+  showSheet(skillDetailHTML(s));
+  $("#sheet").setAttribute("aria-label", (s.title || s.name) + " details");
+}
+async function openWhatsNew() {
+  showSheet('<div class="empty">Loading…</div>');
+  $("#sheet-body").innerHTML = await changelogHTML();
+}
+
+function syncControls() {
+  $("#q").value = query;
+  $("#sort").value = sort;
+  document.querySelectorAll("#seg button").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.filter === filter)));
+}
+
+function applyRoute() {
+  const h = location.hash.replace(/^#/, "");
+  if (h.startsWith("skill=")) { openSkill(decodeURIComponent(h.slice(6))); return; }
+  if (h === "whats-new") { openWhatsNew(); return; }
+  if (h === "skills") { hideSheet(); return; }   // in-page anchor, leave grid as is
+  // base view: restore filter/sort/query from the URL
+  const p = new URLSearchParams(h);
+  filter = p.get("f") || "all";
+  sort = p.get("sort") || "rec";
+  query = (p.get("q") || "").toLowerCase();
+  hideSheet();
+  syncControls();
+  render();
+}
+
+/* control events → update state, reflect to URL (no history spam), re-render */
+$("#q").addEventListener("input", e => {
+  query = e.target.value.toLowerCase().trim();
+  history.replaceState(null, "", location.pathname + location.search + (baseHash() ? "#" + baseHash() : "#"));
+  render();
+});
+$("#sort").addEventListener("change", e => {
+  sort = e.target.value;
+  history.replaceState(null, "", location.pathname + location.search + (baseHash() ? "#" + baseHash() : "#"));
+  render();
+});
 document.querySelectorAll("#seg button").forEach(b => b.addEventListener("click", () => {
   document.querySelectorAll("#seg button").forEach(o => o.setAttribute("aria-pressed", "false"));
   b.setAttribute("aria-pressed", "true");
-  filter = b.dataset.filter; render();
+  filter = b.dataset.filter;
+  history.replaceState(null, "", location.pathname + location.search + (baseHash() ? "#" + baseHash() : "#"));
+  render();
 }));
 
+/* open a skill on card click / keyboard, but not when Get is clicked */
+$("#grid").addEventListener("click", e => {
+  if (e.target.closest("[data-get]")) return;      // let the download happen
+  const card = e.target.closest("[data-skill]");
+  if (card) location.hash = "skill=" + encodeURIComponent(card.dataset.skill);
+});
+$("#grid").addEventListener("keydown", e => {
+  if (e.key !== "Enter" && e.key !== " ") return;
+  const card = e.target.closest("[data-skill]");
+  if (card) { e.preventDefault(); location.hash = "skill=" + encodeURIComponent(card.dataset.skill); }
+});
+
+/* what's-new links */
+document.querySelectorAll('[data-route="whats-new"]').forEach(a =>
+  a.addEventListener("click", e => { e.preventDefault(); location.hash = "whats-new"; }));
+
+/* overlay dismissal */
+$("#sheet-close").addEventListener("click", toBase);
+overlay.addEventListener("click", e => { if (e.target === overlay) toBase(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && overlay.classList.contains("open")) toBase(); });
+
+window.addEventListener("hashchange", applyRoute);
 load();
 </script>
 </body>
