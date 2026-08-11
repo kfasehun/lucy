@@ -32,26 +32,31 @@ Apply these when adding or reviewing anything on the page.
 ## Ive's themes → practical rules
 
 - **Clarity.** Type does the work: a clear scale, generous line-height, real hierarchy (one big heading, quiet labels, readable body). Text is legible at a glance; contrast is never decorative.
-- **Deference.** The black canvas and neutral greys defer to the skills. Red is an accent, not a mood — it marks *the one thing to do next* (primary buttons, active state, focus), never whole regions.
+- **Deference.** The warm paper canvas and ink defer to the skills. Terracotta is an accent, not a mood — it marks *the one thing to do next* (primary buttons, active state, focus, the italic word in the headline), never whole regions.
 - **Depth.** Motion and layering communicate structure, not spectacle: subtle lift on hover, a sheet that rises, a soft backdrop blur. If an animation doesn't explain a relationship, remove it.
 - **Craft.** Optical alignment over mathematical. Consistent corner radii. No orphaned pixels. Squircle icons with a real highlight. The seam should be invisible.
 
-## This site's design system (stay inside it)
+## This site's design system — warm editorial (stay inside it)
 
-The tokens already live in `docs/index.html` `:root`. Reuse them — do not invent new values.
+The identity is **paper & ink, editorial**: warm cream paper, ink type, a considered warm-accent trio, a display serif doing the talking, and a whisper of paper grain. It should read like a design annual, not a dark-mode SaaS template. Tokens live in `docs/index.html` `:root` — reuse them; do not invent values or reintroduce the old black/red theme.
 
-- **Color.** Canvas `--bg #000`; surfaces `--surface / --surface-2 / --surface-3`; hairlines `--hair`. Text `--text` / `--muted` / `--dim`. Accent `--red` family — used *sparingly* for the primary action, active state, and focus only.
-- **Type.** System font stack (SF on Apple). Headings: heavy weight, tight negative letter-spacing. Labels: 11–13px uppercase, `--dim`. Body: 14–16px, line-height ~1.55.
-- **Space.** Consistent rhythm — section padding ~64px, card padding ~22px, control gaps 10–18px. Prefer more space over more lines.
-- **Radius.** `--radius` 20 / `--radius-sm` 12 / `--radius-lg` 28 / pills 999. Match neighbours.
-- **Motion.** 150–280ms, ease-out. Hover lift, sheet rise, fade. Nothing bouncy or attention-seeking.
+- **Color.** Canvas `--paper #F1E8D7`; panels `--paper-2`; raised `--card #FAF4E7`. Type `--ink #211B14` / `--ink-soft` / `--muted`. Hairlines `--line` / `--line-strong`. Accents, warm and disciplined: `--terra #C0492C` (primary — the one thing to do next), `--ochre` (highlight / "New"), `--forest #3C5340` (calm / "Core"). Icons are flat warm tiles with cream glyphs. Never a cool blue/grey; never pure black or pure white.
+- **Type.** `--display` **Fraunces** (serif) for headlines, section titles, card titles, big numbers, and the italic "why" line — this is where the design lives. `--sans` **Instrument Sans** for body/lede/buttons. `--mono` **Space Mono** for eyebrows, slugs, tags, labels, nav links, meta. The accent word in the H1 is Fraunces *italic* terracotta.
+- **Texture.** A fixed paper-grain overlay at ~4–5% multiply. Subtle — it kills digital sterility without being noticed.
+- **Space.** Generous, editorial. Section padding ~62px, card padding ~24px, wrap padding 32px. Whitespace is the point.
+- **Radius.** Softer than print but not pill-happy: cards/panels ~14px, tiles/inputs ~8–10px, icon squircles ~15px, buttons ~5–6px. Round pills only for role chips.
+- **Motion.** 150–280ms ease-out. Card lift, sheet rise, fade. Nothing bouncy.
 
 ### Component rules
-- **Primary button** (filled red pill): at most one per view. This is "Get", "Browse skills", "Publish a skill", "Open a pull request".
-- **Secondary** (surface + hairline pill): everything else — "View source", "Read".
-- **Nav CTA:** the store's single most important action ("Publish a skill") is a visible pill, right-aligned, never a plain text link buried among others.
-- **Cards** are tappable, keyboard-focusable (`role=button`, `tabindex=0`, Enter/Space), and lift on hover/focus.
-- **Overlays** trap nothing the user can't escape: close button + backdrop click + Esc, body scroll-locked, focus visible.
+- **Primary button** (filled terracotta): at most one per view — "Browse skills", "Open a pull request". Hover → `--terra-deep`.
+- **GET / install** is a filled **ink** pill (mono, uppercase); hover → terracotta. Secondary actions are ink-outline or plain underlined links.
+- **Nav CTA:** the store's single most important action ("Publish a skill") is a filled terracotta pill, right-aligned, mono uppercase — never a plain text link buried among others.
+- **Tags/badges:** mono uppercase, hairline outline. Core = forest, New = ochre, roles = ink-outline.
+- **Cards** use a Fraunces title, mono slug, sans summary, a Fraunces-italic "why" line, and a mono footer. Tappable, keyboard-focusable (`role=button`, `tabindex=0`, Enter/Space), lift on hover/focus.
+- **Overlays** are cream sheets over a warm ink scrim; escape via close button + backdrop click + Esc, body scroll-locked, focus visible.
+- **Contrast:** ink on paper is the workhorse. Keep small terracotta/muted text at readable weight/size; never grey-on-grey for anything that must be read.
+
+Fonts load from Google Fonts in the `<head>`. If offline robustness is ever needed, self-host them — but keep Fraunces / Instrument Sans / Space Mono as the identity.
 
 ## Pre-ship review checklist
 
