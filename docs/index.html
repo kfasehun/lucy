@@ -50,6 +50,13 @@
   .nav-links { display: flex; gap: 22px; align-items: center; }
   .nav-links a { color: var(--muted); text-decoration: none; font-size: 13.5px; transition: color .2s; cursor: pointer; }
   .nav-links a:hover { color: var(--text); }
+  .nav-links a.nav-cta {
+    color: var(--red-bright); background: rgba(255,69,58,0.12);
+    border: 1px solid rgba(255,69,58,0.38); border-radius: 999px;
+    padding: 6px 15px; font-weight: 600;
+    transition: background .2s, color .2s, border-color .2s;
+  }
+  .nav-links a.nav-cta:hover { background: linear-gradient(180deg, var(--red-bright), var(--red)); color: #fff; border-color: transparent; }
   .nav-links .sync { color: var(--dim); }
   .nav-links code {
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px;
@@ -412,10 +419,10 @@
   <div class="wrap">
     <a class="brand" href="#">Lucy<span class="dot">.</span></a>
     <div class="nav-links">
-      <a href="#skills">Skills</a>
-      <a data-route="upload">Publish a skill</a>
+      <a href="#skills" class="hide-sm">Skills</a>
       <a data-route="whats-new" class="hide-sm">What&rsquo;s new</a>
       <a id="nav-repo" href="#" class="hide-sm">Source</a>
+      <a data-route="upload" class="nav-cta">Publish a skill</a>
     </div>
   </div>
 </nav>
