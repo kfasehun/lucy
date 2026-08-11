@@ -1,0 +1,110 @@
+{
+  "product": {
+    "name": "Lucy",
+    "tagline": "The shared skill store for Bending Spoons sellers.",
+    "channel": "#kenny-machine",
+    "repo": "https://github.com/REPLACE-ME/lucy"
+  },
+  "skills": {
+    "prospecting-onboarding": {
+      "title": "Onboarding",
+      "summary": "Sets Lucy up for you in about 20 minutes. Interviews you, writes your config, checks your connectors, builds your contact repository, and stages your first batch.",
+      "why": "Start here. Everything else assumes this has run.",
+      "status": "core",
+      "roles": ["BDR", "AE", "CSM"],
+      "author": "Kenny Fasehun",
+      "company": "Brightcove",
+      "added": "2026-08-10"
+    },
+    "prospecting-engine": {
+      "title": "Prospecting Engine",
+      "summary": "The daily motion. Screens accounts, stages a batch, drafts the outreach, logs every outcome. Runs a different sequence depending on whether you are a BDR, AE, or CSM.",
+      "why": "This is the part that books meetings.",
+      "status": "core",
+      "roles": ["BDR", "AE", "CSM"],
+      "author": "Kenny Fasehun",
+      "company": "Brightcove",
+      "added": "2026-08-10"
+    },
+    "human-messaging": {
+      "title": "Human Messaging",
+      "summary": "Writes the actual emails. Enforces a banned-phrase list and the one-question rule. Grounded in Gap Selling, Sandler, and Josh Braun rather than generic sales copy.",
+      "why": "Run before drafting anything a prospect will read.",
+      "status": "core",
+      "roles": ["BDR", "AE", "CSM"],
+      "author": "Kenny Fasehun",
+      "company": "Brightcove",
+      "added": "2026-08-10"
+    },
+    "objection-handler": {
+      "title": "Objection Handler",
+      "summary": "For when they say no. Researches the prospect's actual stack first, finds the real gap, then replies in a way that teaches something instead of begging for the meeting back.",
+      "why": "A decline is usually timing, not a no.",
+      "status": "core",
+      "roles": ["BDR", "AE", "CSM"],
+      "author": "Kenny Fasehun",
+      "company": "Brightcove",
+      "added": "2026-08-10"
+    },
+    "followup-noshow": {
+      "title": "Follow-ups and No-shows",
+      "summary": "Nudges holds nobody has accepted, confirms today's meetings, and rebooks anyone who missed one. Never sends a naked reminder.",
+      "why": "A no-show is not a no.",
+      "status": "core",
+      "roles": ["BDR", "AE", "CSM"],
+      "author": "Kenny Fasehun",
+      "company": "Brightcove",
+      "added": "2026-08-10"
+    },
+    "call-needs-assessment": {
+      "title": "Call Needs Assessment",
+      "summary": "After a call, pulls the transcript and maps every stated need against what you actually sell. Marks each one solved, partial, gap, or needs validation. Flags commercial and competitive risk.",
+      "why": "Stops you promising things the product does not do.",
+      "status": "optional",
+      "roles": ["BDR", "AE"],
+      "author": "Kenny Fasehun",
+      "company": "Brightcove",
+      "added": "2026-08-10"
+    },
+    "warm-opener": {
+      "title": "Warm Opener",
+      "summary": "Researches a prospect's public interests and location so the message opens with something real, a result, a local event, something they posted, before the business bit.",
+      "why": "Warmth is the single biggest lift in the field data so far.",
+      "status": "optional",
+      "roles": ["BDR", "AE", "CSM"],
+      "author": "Kenny Fasehun",
+      "company": "Brightcove",
+      "added": "2026-08-10"
+    },
+    "lucy-sync": {
+      "title": "Sync",
+      "summary": "Pulls the newest version of everything from the store and installs it. Tells you what changed and what you had edited locally before it touches anything.",
+      "why": "Say \"sync lucy\" whenever you want to be current.",
+      "status": "core",
+      "roles": ["BDR", "AE", "CSM"],
+      "author": "Kenny Fasehun",
+      "company": "Brightcove",
+      "added": "2026-08-11"
+    },
+    "lucy-publish": {
+      "title": "Publish",
+      "summary": "Takes a skill you built, adds it to the store, packages it, and drafts the announcement. Refuses to publish anything containing contact data.",
+      "why": "If you built something good, this is how everyone else gets it.",
+      "status": "core",
+      "roles": ["BDR", "AE", "CSM"],
+      "author": "Kenny Fasehun",
+      "company": "Brightcove",
+      "added": "2026-08-11"
+    },
+    "lucy-report": {
+      "title": "Report Card",
+      "summary": "Counts your meetings booked and opps piped, works out which skills you were running, and sends the numbers back to the store as aggregates. Never sends your name or any prospect's.",
+      "why": "This is what lets the store rank skills on real outcomes instead of vibes.",
+      "status": "core",
+      "roles": ["BDR", "AE", "CSM"],
+      "author": "Kenny Fasehun",
+      "company": "Brightcove",
+      "added": "2026-08-11"
+    }
+  }
+}

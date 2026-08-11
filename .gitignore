@@ -1,0 +1,42 @@
+# This repo is public. Data never goes in it.
+# These patterns are a safety net, not a substitute for looking.
+
+*.csv
+!*TEMPLATE*.csv
+!templates/*.csv
+*.xlsx
+*.xls
+*.numbers
+*.db
+*.sqlite
+
+# Real seller configs contain names, territories, and exclusions.
+SELLER-CONFIG.md
+!templates/SELLER-CONFIG.md
+
+# Named working files that have leaked into repos before
+Master*Log*
+Master*Contact*Repository*
+!templates/Master Contact Repository - TEMPLATE.csv
+*Blocklist*
+*blocklist*
+*do-not-contact*
+Objections*Library*
+Opportunity*Tracker*
+
+# Local mirror of the store, if someone clones inside the repo
+.lucy-store/
+
+# Secrets
+.env
+*.pem
+*.key
+token*
+*_token
+.netrc
+
+# Noise
+.DS_Store
+__pycache__/
+*.pyc
+node_modules/
