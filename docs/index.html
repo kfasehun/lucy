@@ -137,6 +137,11 @@
   .sec-head h2 { font-size: clamp(26px, 4vw, 34px); font-weight: 700; letter-spacing: -0.025em; margin: 0; }
   .sec-head .sub { color: var(--dim); font-size: 14.5px; margin: 6px 0 0; }
 
+  /* Fleet + Performance are ops views — stowed off the landing page until asked for,
+     so the store defers to the skills. Revealed by the "Fleet" nav link. */
+  #fleet, #performance { display: none; }
+  body.show-ops #fleet, body.show-ops #performance { display: block; }
+
   /* controls */
   .controls { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
   .seg { display: inline-flex; background: var(--surface-2); border: 1px solid var(--hair);
@@ -179,7 +184,7 @@
   .grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(348px, 1fr)); }
   .card {
     background: var(--surface); border: 1px solid var(--hair); border-radius: var(--radius);
-    padding: 22px; display: flex; flex-direction: column; cursor: pointer;
+    padding: 22px; display: flex; flex-direction: column; cursor: pointer; min-width: 0;
     transition: transform .25s cubic-bezier(.2,.7,.3,1), border-color .25s, box-shadow .25s;
   }
   .card:hover, .card:focus-visible {
@@ -224,9 +229,9 @@
   .card .why { margin: 0; font-size: 13.5px; color: var(--muted); line-height: 1.5; }
   .card-foot {
     margin-top: auto; padding-top: 16px; margin-top: 18px; border-top: 1px solid var(--hair);
-    display: flex; align-items: center; gap: 12px; font-size: 12.5px; color: var(--dim);
+    display: flex; align-items: center; gap: 6px 12px; flex-wrap: wrap; font-size: 12.5px; color: var(--dim);
   }
-  .card-foot .who { min-width: 0; }
+  .card-foot .who { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .card-foot .who b { color: var(--muted); font-weight: 500; }
   .card-foot .installs { margin-left: auto; text-align: right; white-space: nowrap; }
 
@@ -403,7 +408,7 @@
   @media (max-width: 720px) {
     .how { grid-template-columns: 1fr; }
     .hero { padding: 72px 0 48px; }
-    .grid { grid-template-columns: 1fr; }
+    .grid { grid-template-columns: minmax(0, 1fr); }
     .sec-head { align-items: flex-start; }
     .controls { width: 100%; }
     .search { order: 3; width: 100%; flex-basis: 100%; }
@@ -420,6 +425,7 @@
     <a class="brand" href="#">Lucy<span class="dot">.</span></a>
     <div class="nav-links">
       <a href="#skills" class="hide-sm">Skills</a>
+      <a data-route="fleet" class="hide-sm">Fleet</a>
       <a data-route="whats-new" class="hide-sm">What&rsquo;s new</a>
       <a id="nav-repo" href="#" class="hide-sm">Source</a>
       <a data-route="upload" class="nav-cta">Publish a skill</a>
@@ -434,13 +440,12 @@
     <p class="lede" id="tagline">The shared skill store for Bending Spoons sellers.</p>
     <div class="hero-cta">
       <a class="btn-primary" href="#skills">Browse skills</a>
-      <a class="btn-secondary" id="hero-repo" href="#">View source</a>
     </div>
     <div class="meta-strip">
       <span>Version <b id="version">—</b></span><span class="sep">·</span>
       <span><b id="skill-count">—</b> skills</span><span class="sep">·</span>
       <span>Updated <b id="generated">—</b></span><span class="sep">·</span>
-      <a data-route="whats-new">What changed</a>
+      <a data-route="whats-new">What&rsquo;s new</a>
     </div>
 
     <div class="how">
@@ -584,7 +589,6 @@ async function load() {
       if (d.product.repo) {
         REPO = d.product.repo;
         $("#nav-repo").href = REPO;
-        $("#hero-repo").href = REPO;
       }
       UPLOAD = d.product.upload || "";
       CHANNEL = d.product.channel || "";
@@ -1154,6 +1158,13 @@ function applyRoute() {
   if (h.startsWith("skill=")) { openSkill(decodeURIComponent(h.slice(6))); return; }
   if (h === "whats-new") { openWhatsNew(); return; }
   if (h === "upload") { openUpload(); return; }
+  if (h === "fleet") {                             // reveal the stowed ops views and scroll to them
+    hideSheet();
+    document.body.classList.add("show-ops");
+    const f = document.getElementById("fleet");
+    if (f) f.scrollIntoView({ behavior: "smooth" });
+    return;
+  }
   if (h === "skills") { hideSheet(); return; }   // in-page anchor, leave grid as is
   // base view: restore filter/sort/query from the URL
   const p = new URLSearchParams(h);
