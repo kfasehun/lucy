@@ -3,7 +3,8 @@
     "name": "Lucy",
     "tagline": "The shared skill store for Bending Spoons sellers.",
     "channel": "#kenny-machine",
-    "repo": "https://github.com/kfasehun/lucy"
+    "repo": "https://github.com/kfasehun/lucy",
+    "upload": ""
   },
   "_ignore_comment": "Skills that come from somewhere other than Lucy. The beacon skips these entirely, so they never show up as 'not in the store'. Add to this list rather than letting the fleet page fill with noise.",
   "ignore": [

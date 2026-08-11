@@ -342,6 +342,57 @@
              color: var(--red-bright); background: rgba(255,69,58,0.10); padding: 1px 6px; border-radius: 5px; }
   .md hr { border: none; border-top: 1px solid var(--hair); margin: 26px 0; }
 
+  /* ---------- upload form ---------- */
+  .uform { display: grid; gap: 18px; }
+  .dropzone {
+    border: 1.5px dashed var(--hair-strong); border-radius: 14px; padding: 28px 20px;
+    text-align: center; color: var(--muted); cursor: pointer;
+    transition: border-color .2s, background .2s, color .2s;
+  }
+  .dropzone:hover, .dropzone.drag { border-color: var(--red); background: rgba(255,69,58,0.06); color: var(--text); }
+  .dropzone .big { font-size: 15px; color: var(--text); margin-bottom: 4px; font-weight: 500; }
+  .dropzone .sm { font-size: 13px; }
+  .dropzone input[type=file] { display: none; }
+  .filelist { display: grid; gap: 6px; }
+  .filelist .f {
+    display: flex; align-items: center; gap: 10px; font-size: 13px;
+    background: var(--surface-2); border: 1px solid var(--hair); border-radius: 9px; padding: 8px 12px;
+  }
+  .filelist .f code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--text); background: none; padding: 0; }
+  .filelist .f .sz { color: var(--dim); margin-left: auto; white-space: nowrap; }
+  .filelist .f .rm { cursor: pointer; color: var(--dim); border: none; background: none; font-size: 16px; padding: 0 2px; }
+  .filelist .f .rm:hover { color: var(--red); }
+  .field label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--dim); margin-bottom: 7px; }
+  .field input[type=text], .field input[type=password], .field textarea {
+    width: 100%; background: var(--surface-2); color: var(--text); border: 1px solid var(--hair);
+    border-radius: 10px; padding: 10px 12px; font-family: inherit; font-size: 14px;
+  }
+  .field input:focus, .field textarea:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 4px rgba(255,69,58,0.15); }
+  .field textarea { resize: vertical; min-height: 62px; line-height: 1.5; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .rolechips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .rolechips label {
+    display: inline-flex; align-items: center; gap: 7px; margin: 0; padding: 7px 13px;
+    background: var(--surface-2); border: 1px solid var(--hair); border-radius: 999px;
+    font-size: 13px; color: var(--muted); text-transform: none; letter-spacing: 0; cursor: pointer;
+  }
+  .rolechips input { accent-color: var(--red); margin: 0; }
+  .vlist { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+  .vlist li { font-size: 13px; padding-left: 22px; position: relative; line-height: 1.5; }
+  .vlist li.err { color: #ff9a8f; } .vlist li.err::before { content: "✕"; position: absolute; left: 2px; color: var(--red); }
+  .vlist li.ok { color: var(--muted); } .vlist li.ok::before { content: "✓"; position: absolute; left: 2px; color: #5fd07d; }
+  .vlist li.warn { color: var(--amber); } .vlist li.warn::before { content: "!"; position: absolute; left: 5px; font-weight: 700; }
+  .upnote { font-size: 13px; color: var(--dim); line-height: 1.55; }
+  .upnote code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px;
+                 color: var(--red-bright); background: rgba(255,69,58,0.10); padding: 1px 6px; border-radius: 5px; }
+  .upresult { border-radius: 12px; padding: 14px 16px; font-size: 14px; line-height: 1.5; }
+  .upresult.ok { background: rgba(76,199,106,0.10); border: 1px solid rgba(76,199,106,0.35); color: #8fe0a3; }
+  .upresult.err { background: rgba(255,69,58,0.10); border: 1px solid rgba(255,69,58,0.35); color: #ff9a8f; }
+  .upresult a { color: var(--red-bright); font-weight: 600; }
+  .btn-primary.full { width: 100%; text-align: center; padding: 13px; }
+  .btn-primary:disabled { opacity: .45; cursor: not-allowed; filter: none; box-shadow: none; transform: none; }
+  .preview-card { pointer-events: none; }
+
   @media (max-width: 720px) {
     .how { grid-template-columns: 1fr; }
     .hero { padding: 72px 0 48px; }
@@ -362,9 +413,9 @@
     <a class="brand" href="#">Lucy<span class="dot">.</span></a>
     <div class="nav-links">
       <a href="#skills">Skills</a>
+      <a data-route="upload">Publish a skill</a>
       <a data-route="whats-new" class="hide-sm">What&rsquo;s new</a>
       <a id="nav-repo" href="#" class="hide-sm">Source</a>
-      <a class="sync hide-sm">Installed? say <code>sync lucy</code></a>
     </div>
   </div>
 </nav>
@@ -509,7 +560,8 @@ function iconFor(name, big) {
 }
 
 let SKILLS = [], FLEET = null, CHANGELOG = null;
-let filter = "all", query = "", sort = "rec", REPO = "";
+let filter = "all", query = "", sort = "rec", REPO = "", UPLOAD = "", CHANNEL = "";
+let upFiles = [];
 
 async function load() {
   try {
@@ -527,6 +579,8 @@ async function load() {
         $("#nav-repo").href = REPO;
         $("#hero-repo").href = REPO;
       }
+      UPLOAD = d.product.upload || "";
+      CHANNEL = d.product.channel || "";
     }
   } catch (e) {
     $("#grid").innerHTML = '<div class="empty">Could not load the catalog. ' +
@@ -821,6 +875,266 @@ async function openWhatsNew() {
   $("#sheet-body").innerHTML = await changelogHTML();
 }
 
+/* ---------- upload / publish a skill ---------- */
+const TEXT_EXT = /\.(md|markdown|txt|json|ya?ml|toml|js|ts|py|sh|bash|zsh|html?|css|xml|sql|csv|tsv|env|ini|cfg)$/i;
+const DATA_EXT = /\.(csv|tsv|xlsx?|xlsm|numbers|parquet|db|sqlite)$/i;
+const EMAIL_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
+const SLUG_RE = /^[a-z0-9][a-z0-9-]{1,48}$/;
+
+function parseFrontmatter(text) {
+  const out = {};
+  if (!text || !text.startsWith("---")) return out;
+  const end = text.indexOf("\n---", 3);
+  if (end === -1) return out;
+  for (const line of text.slice(3, end).split("\n")) {
+    const m = line.match(/^\s*([A-Za-z0-9_-]+)\s*:\s*(.*)$/);
+    if (m) out[m[1].toLowerCase()] = m[2].replace(/^["']|["']$/g, "");
+  }
+  return out;
+}
+function fmtBytes(n) { return n < 1024 ? n + " B" : (n / 1024).toFixed(1) + " KB"; }
+
+function openUpload() {
+  upFiles = [];
+  const disabledNote = UPLOAD
+    ? ""
+    : `<div class="note" style="border-left-color:var(--amber)"><b>Uploads aren’t switched on yet.</b> ` +
+      `A maintainer needs to deploy the upload backend (see <code>backend/README.md</code>). ` +
+      `Until then, publish from inside Claude: say <code>publish this skill</code>.</div>`;
+  showSheet(`
+    <div class="detail upload">
+      <h3 style="font-size:24px;margin:0 0 8px">Publish a skill</h3>
+      <p class="whento" style="margin:0">Upload a skill you built. It opens a Pull Request for review —
+      nothing reaches the team until a maintainer merges it.</p>
+      ${disabledNote}
+      <div class="note" style="margin-top:14px"><b>No prospect data, ever.</b> No contact lists, no individual
+      numbers. This repo is public — the upload is scanned here and checked again on review.</div>
+
+      <div class="uform">
+        <div>
+          <div class="dropzone" id="up-drop">
+            <div class="big">Drop your skill files here</div>
+            <div class="sm">or click to choose — include <code>SKILL.md</code> and any reference files</div>
+            <input type="file" id="up-input" multiple>
+          </div>
+          <div class="filelist" id="up-files" style="margin-top:10px"></div>
+        </div>
+
+        <div class="field"><label>Title</label>
+          <input type="text" id="up-title" placeholder="Human-readable name, e.g. Warm Opener"></div>
+        <div class="field"><label>Summary</label>
+          <textarea id="up-summary" placeholder="A sentence or two on what it does."></textarea></div>
+        <div class="grid2">
+          <div class="field"><label>Why use it (optional)</label>
+            <input type="text" id="up-why" placeholder="The one-line reason"></div>
+          <div class="field"><label>Your name</label>
+            <input type="text" id="up-author" placeholder="For credit + the PR"></div>
+        </div>
+        <div class="field"><label>Roles it fits</label>
+          <div class="rolechips" id="up-roles">
+            <label><input type="checkbox" value="BDR">BDR</label>
+            <label><input type="checkbox" value="AE">AE</label>
+            <label><input type="checkbox" value="CSM">CSM</label>
+          </div>
+        </div>
+        <div class="field"><label>Team passphrase</label>
+          <input type="password" id="up-pass" placeholder="${CHANNEL ? "Ask in " + esc(CHANNEL) : "Shared team passphrase"}"></div>
+
+        <div><h4 style="margin:6px 0 10px">Checks</h4><ul class="vlist" id="up-checks"></ul></div>
+        <div id="up-preview"></div>
+        <div id="up-result"></div>
+        <button class="btn-primary full" id="up-submit" disabled>Open a pull request</button>
+        <p class="upnote" id="up-foot"></p>
+      </div>
+    </div>`);
+  bindUpload();
+  revalidateUpload();
+}
+
+function bindUpload() {
+  const drop = $("#up-drop"), input = $("#up-input");
+  drop.addEventListener("click", () => input.click());
+  input.addEventListener("change", () => addFiles(input.files));
+  ["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, e => {
+    e.preventDefault(); drop.classList.add("drag");
+  }));
+  ["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => {
+    e.preventDefault(); drop.classList.remove("drag");
+  }));
+  drop.addEventListener("drop", e => { if (e.dataTransfer) addFiles(e.dataTransfer.files); });
+  ["up-title", "up-summary", "up-why", "up-author", "up-pass"].forEach(id =>
+    $("#" + id).addEventListener("input", revalidateUpload));
+  $("#up-roles").addEventListener("change", revalidateUpload);
+  $("#up-submit").addEventListener("click", submitUpload);
+}
+
+function readFile(file) {
+  const rel = file.webkitRelativePath || file.name;
+  const path = rel.includes("/") ? rel.split("/").slice(1).join("/") : rel;
+  const asText = TEXT_EXT.test(path) || file.size < 4096;
+  return new Promise((resolve) => {
+    const fr = new FileReader();
+    fr.onload = () => {
+      if (asText) {
+        resolve({ path, encoding: "utf8", content: fr.result, bytes: new Blob([fr.result]).size });
+      } else {
+        const b64 = String(fr.result).split(",")[1] || "";
+        resolve({ path, encoding: "base64", content: b64, bytes: file.size });
+      }
+    };
+    fr.onerror = () => resolve(null);
+    asText ? fr.readAsText(file) : fr.readAsDataURL(file);
+  });
+}
+
+async function addFiles(fileList) {
+  const parsed = (await Promise.all([...fileList].map(readFile))).filter(Boolean);
+  for (const f of parsed) {
+    const i = upFiles.findIndex(x => x.path === f.path);
+    if (i >= 0) upFiles[i] = f; else upFiles.push(f);
+  }
+  renderUploadFiles();
+  revalidateUpload();
+}
+
+function renderUploadFiles() {
+  $("#up-files").innerHTML = upFiles.map((f, i) =>
+    `<div class="f"><code>${esc(f.path)}</code><span class="sz">${fmtBytes(f.bytes)}</span>` +
+    `<button class="rm" data-i="${i}" aria-label="Remove">&times;</button></div>`).join("");
+  $("#up-files").querySelectorAll(".rm").forEach(b => b.addEventListener("click", () => {
+    upFiles.splice(+b.dataset.i, 1); renderUploadFiles(); revalidateUpload();
+  }));
+}
+
+function validateUpload() {
+  const errors = [], oks = [], warns = [];
+  const existing = new Set(SKILLS.map(s => s.name));
+
+  const md = upFiles.find(f => f.path.toLowerCase() === "skill.md");
+  if (!md) { errors.push("Add a SKILL.md at the root of the skill."); return { errors, oks, warns, ok: false }; }
+  oks.push("SKILL.md found");
+
+  const fm = parseFrontmatter(md.content);
+  const name = (fm.name || "").trim();
+  if (!name) errors.push("SKILL.md frontmatter needs a name:");
+  else if (!SLUG_RE.test(name)) errors.push(`name “${name}” must be a slug (lowercase, numbers, dashes).`);
+  else if (existing.has(name)) errors.push(`A skill named “${name}” already exists — pick a new name.`);
+  else oks.push(`Name: ${name}`);
+
+  if (!fm.description) errors.push("SKILL.md frontmatter needs a description: (the when-to-use line).");
+  else oks.push("Has a description");
+
+  let total = 0;
+  for (const f of upFiles) {
+    total += f.bytes;
+    if (DATA_EXT.test(f.path)) errors.push(`${f.path} looks like a data file — not allowed in the store.`);
+    if (f.bytes > 512 * 1024) errors.push(`${f.path} is over 512 KB.`);
+    if (f.encoding === "utf8") {
+      const n = (f.content.match(EMAIL_RE) || []).length;
+      if (n > 5) errors.push(`${f.path} has ${n} email addresses — that reads like contact data.`);
+    }
+  }
+  if (total > 1024 * 1024) errors.push("Total upload is over 1 MB.");
+  if (!errors.some(e => e.includes("data file") || e.includes("contact data"))) oks.push("No data files detected");
+
+  const title = $("#up-title") && $("#up-title").value.trim();
+  if (!title) warns.push("Add a title so the store card reads well.");
+  const summary = $("#up-summary") && $("#up-summary").value.trim();
+  if (!summary) warns.push("Add a summary — it’s the card’s description.");
+  const roles = [...document.querySelectorAll("#up-roles input:checked")].map(c => c.value);
+  if (!roles.length) warns.push("Pick at least one role (BDR / AE / CSM).");
+
+  return { errors, oks, warns, ok: errors.length === 0, name, fm };
+}
+
+function revalidateUpload() {
+  const v = validateUpload();
+  $("#up-checks").innerHTML =
+    v.errors.map(e => `<li class="err">${esc(e)}</li>`).join("") +
+    v.warns.map(w => `<li class="warn">${esc(w)}</li>`).join("") +
+    v.oks.map(o => `<li class="ok">${esc(o)}</li>`).join("");
+
+  // live preview card
+  if (v.name) {
+    const title = ($("#up-title").value.trim()) || v.name;
+    const summary = esc($("#up-summary").value.trim() || (v.fm && v.fm.description) || "");
+    const why = esc($("#up-why").value.trim());
+    const roles = [...document.querySelectorAll("#up-roles input:checked")].map(c => c.value);
+    $("#up-preview").innerHTML =
+      `<h4 style="margin-top:6px">Preview</h4>
+       <article class="card preview-card">
+         <div class="card-top">${iconFor(v.name)}
+           <div class="card-head"><h3>${esc(title)}</h3><div class="slug">${esc(v.name)}</div></div>
+         </div>
+         <div class="badges"><span class="badge">Optional</span>
+           ${roles.map(r => `<span class="badge">${esc(r)}</span>`).join("")}</div>
+         <p class="summary">${summary}</p>${why ? `<p class="why">${why}</p>` : ""}
+       </article>`;
+  } else {
+    $("#up-preview").innerHTML = "";
+  }
+
+  const pass = $("#up-pass") && $("#up-pass").value.trim();
+  const btn = $("#up-submit");
+  const foot = $("#up-foot");
+  if (!UPLOAD) {
+    btn.disabled = true;
+    btn.textContent = "Uploads not enabled yet";
+    foot.innerHTML = "Ask a maintainer to deploy the backend, or say <code>publish this skill</code> in Claude.";
+  } else {
+    btn.disabled = !(v.ok && pass);
+    btn.textContent = "Open a pull request";
+    foot.textContent = v.ok
+      ? (pass ? "Ready. This opens a PR for review — it won’t go live until merged." : "Enter the team passphrase to submit.")
+      : "Fix the items above to submit.";
+  }
+}
+
+async function submitUpload() {
+  const v = validateUpload();
+  if (!v.ok || !UPLOAD) return;
+  const btn = $("#up-submit"), result = $("#up-result");
+  btn.disabled = true; btn.textContent = "Opening pull request…";
+  result.innerHTML = "";
+
+  const payload = {
+    passphrase: $("#up-pass").value,
+    submitter: $("#up-author").value.trim() || undefined,
+    skill: {
+      name: v.name,
+      title: $("#up-title").value.trim() || v.name,
+      summary: $("#up-summary").value.trim(),
+      why: $("#up-why").value.trim(),
+      roles: [...document.querySelectorAll("#up-roles input:checked")].map(c => c.value),
+      author: $("#up-author").value.trim() || "Community",
+      files: upFiles.map(({ path, encoding, content }) => ({ path, encoding, content })),
+    },
+  };
+
+  try {
+    const r = await fetch(UPLOAD, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await r.json().catch(() => ({}));
+    if (r.ok && data.pr) {
+      result.className = "upresult ok";
+      result.innerHTML = `Pull request opened. <a href="${esc(data.pr)}" target="_blank" rel="noopener">Review it on GitHub ›</a>` +
+        `<br>A maintainer will look it over before it reaches the team.`;
+      btn.textContent = "Submitted";
+    } else {
+      result.className = "upresult err";
+      result.textContent = data.error || `Upload failed (${r.status}).`;
+      btn.disabled = false; btn.textContent = "Open a pull request";
+    }
+  } catch (e) {
+    result.className = "upresult err";
+    result.textContent = "Could not reach the upload service. Check your connection and try again.";
+    btn.disabled = false; btn.textContent = "Open a pull request";
+  }
+}
+
 function syncControls() {
   $("#q").value = query;
   $("#sort").value = sort;
@@ -832,6 +1146,7 @@ function applyRoute() {
   const h = location.hash.replace(/^#/, "");
   if (h.startsWith("skill=")) { openSkill(decodeURIComponent(h.slice(6))); return; }
   if (h === "whats-new") { openWhatsNew(); return; }
+  if (h === "upload") { openUpload(); return; }
   if (h === "skills") { hideSheet(); return; }   // in-page anchor, leave grid as is
   // base view: restore filter/sort/query from the URL
   const p = new URLSearchParams(h);
@@ -874,9 +1189,9 @@ $("#grid").addEventListener("keydown", e => {
   if (card) { e.preventDefault(); location.hash = "skill=" + encodeURIComponent(card.dataset.skill); }
 });
 
-/* what's-new links */
-document.querySelectorAll('[data-route="whats-new"]').forEach(a =>
-  a.addEventListener("click", e => { e.preventDefault(); location.hash = "whats-new"; }));
+/* routed nav links (what's new, upload) */
+document.querySelectorAll("[data-route]").forEach(a =>
+  a.addEventListener("click", e => { e.preventDefault(); location.hash = a.dataset.route; }));
 
 /* overlay dismissal */
 $("#sheet-close").addEventListener("click", toBase);
